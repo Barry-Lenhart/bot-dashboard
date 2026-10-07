@@ -84,6 +84,8 @@ h3{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:.08
 .sbar .mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--amber);box-shadow:0 0 8px var(--amber)}
 .sbar .zero{position:absolute;top:-2px;bottom:-2px;width:1px;background:rgba(255,255,255,.25)}
 .wrow .sc{text-align:right}
+.wrow.learn{opacity:.55}
+.learnhdr{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-top:6px;padding-top:8px;border-top:1px dashed var(--card-b)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:6px 4px;border-bottom:1px solid var(--card-b)}
 td{padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.04)}
@@ -349,13 +351,21 @@ function renderAI(A) {
   const s = A.status || "";
   st.className = "pill " + (s.startsWith("holding") ? "hold" : s === "watching" ? "watch" : "idle");
   st.textContent = s.startsWith("holding") ? "📈 " + s : s === "watching" ? "👀 watching" : s.startsWith("paused") ? "⏸ " + s : "🌙 " + s;
-  $("a-watch-h").textContent = `Watchlist ${A.day || ""} — AI score vs the buy bar (${A.bar != null ? pct(A.bar, 2) : "?"})`;
+  $("a-watch-h").textContent = `Can buy today ${A.day || ""} — AI score vs the buy bar (${A.bar != null ? pct(A.bar, 2) : "?"})`;
   const wl = $("a-watch"); wl.textContent = "";
   if (!A.watch.length) wl.innerHTML = '<div class="empty">No watchlist yet today — it fills from 9:35 AM ET.</div>';
   const lo = -0.01, hi = Math.max(0.006, (A.bar || 0) * 1.6), span = hi - lo;
   const xpos = v => Math.max(0, Math.min(100, (v - lo) / span * 100));
+  const learnOnly = A.watch.filter(w => w.can_buy === false);
+  let divider = false;
   for (const w of A.watch) {
-    const r = document.createElement("div"); r.className = "wrow";
+    if (w.can_buy === false && !divider) {
+      divider = true;
+      const h = document.createElement("div"); h.className = "learnhdr";
+      h.textContent = `Also watching ${learnOnly.length} more — learning only, it won't buy these`;
+      wl.append(h);
+    }
+    const r = document.createElement("div"); r.className = "wrow" + (w.can_buy === false ? " learn" : "");
     const sym = document.createElement("div"); sym.className = "sym"; sym.textContent = w.sym + (A.hold && A.hold.sym === w.sym ? " 📈" : "");
     const gap = document.createElement("div"); gap.className = "gap mono"; gap.textContent = pct(w.gap, 0);
     const bar = document.createElement("div"); bar.className = "sbar";

@@ -127,7 +127,7 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
   <div class="lockcard">
     <div class="logo"><span class="dot"></span>Bot HQ</div>
     <p>Your trading bots, live. The data is encrypted — enter your dashboard password to unlock it.</p>
-    <input id="pw" type="password" placeholder="Dashboard password" autocomplete="current-password">
+    <input id="pw" type="password" placeholder="Dashboard password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
     <label class="rem"><input id="rem" type="checkbox" checked> Remember me on this device</label>
     <button class="btn primary" id="unlock">Unlock</button>
     <div id="lockmsg"></div>
@@ -234,7 +234,7 @@ async function tryUnlock(raw) {
 async function boot() {
   try { box = await fetchBox(); } catch (e) { $("lockmsg").textContent = e.message; return; }
   const s = saved();
-  if (s && s.salt === box.salt) {
+  if (s && box && box.salt && s.salt === box.salt) {
     const data = await tryUnlock(b64d(s.raw));
     if (data) { session = {salt: s.salt, raw: b64d(s.raw)}; return show(data); }
   }
@@ -243,11 +243,16 @@ async function boot() {
 }
 async function unlock() {
   const pw = $("pw").value;
-  if (!pw || !box) return;
+  if (!pw) { $("lockmsg").textContent = "Type your password first."; return; }
   $("lockmsg").textContent = "Unlocking…";
-  const raw = await deriveRaw(pw, box.salt, box.iter);
-  const data = await tryUnlock(raw);
-  if (!data) { $("lockmsg").textContent = "Wrong password."; return; }
+  try { box = await fetchBox(); }
+  catch (e) { $("lockmsg").textContent = e.message + " — check your connection and try again."; return; }
+  if (!box || box.v !== 1 || !box.salt) { $("lockmsg").textContent = "The dashboard data isn't ready yet — try again in a few minutes."; return; }
+  if (!window.crypto || !crypto.subtle) { $("lockmsg").textContent = "This browser can't unlock the data (needs a modern browser over https)."; return; }
+  let raw, data;
+  try { raw = await deriveRaw(pw, box.salt, box.iter); data = await tryUnlock(raw); }
+  catch (e) { $("lockmsg").textContent = "Unlock error: " + e.message; return; }
+  if (!data) { $("lockmsg").textContent = "Wrong password — check capital letters, and that it's the one you set with dashpass.sh."; return; }
   session = {salt: box.salt, raw};
   if ($("rem").checked) save({salt: box.salt, raw: b64e(raw)});
   $("pw").value = ""; $("lockmsg").textContent = "";

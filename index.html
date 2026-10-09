@@ -468,13 +468,14 @@ function renderChat(C) {
   setText("c-eq", usd(C.equity));
   const ch = C.equity - C.start_equity;
   $("c-sub").textContent = `${sgnUsd(ch)} (${pct(ch / C.start_equity, 2)}) since it started with ${usd(C.start_equity, 0)}` +
-    (C.calls_today ? ` · asked the chatbot ${C.calls_today}× today` : "");
+    (C.calls_today ? ` · asked the chatbot ${C.calls_today}× today` : "") +
+    (C.practice_n ? ` · 🧪 ${C.practice_n} practice trades (${sgnUsd(C.practice_pnl)} pretend) not counted` : "");
   setText("c-n", String(C.n_trades));
   setText("c-win", C.n_trades ? (C.wins / C.n_trades * 100).toFixed(0) + "%" : "—");
   setText("c-pnl", sgnUsd(C.pnl), cls(C.pnl));
   const st = $("c-status"), s = C.status || "";
   st.className = "pill " + (s.startsWith("holding") ? "hold" : s === "trading" ? "watch" : "idle");
-  st.textContent = s.startsWith("holding") ? "📈 " + s : s === "trading" ? "👀 trading" : s.startsWith("paused") ? "⏸ " + s : "🌙 " + s;
+  st.textContent = s.startsWith("holding") ? "📈 " + s : s === "trading" ? "👀 trading" : s.startsWith("🧪") ? s : "🌙 " + s;
   const th = $("c-thoughts"); th.textContent = "";
   const thoughts = (C.thoughts || []).filter(x => x && x.length > 6).slice(-5).reverse();
   if (!thoughts.length) th.innerHTML = '<div class="empty">Nothing yet — it starts thinking out loud at 9:30 AM ET.</div>';
@@ -505,7 +506,7 @@ function renderChat(C) {
   if (!C.trades.length) emptyRow(tt, 5, "No trades yet.");
   for (const t of C.trades.slice().reverse()) {
     const tr = document.createElement("tr");
-    cell(tr, (t.day || "").slice(5)); cell(tr, t.symbol); cell(tr, t.style);
+    cell(tr, (t.day || "").slice(5)); cell(tr, t.symbol); cell(tr, t.style + (t.practice ? " 🧪" : ""));
     cell(tr, t.minutes >= 1440 ? Math.round(t.minutes / 1440) + " d" : t.minutes >= 60 ? (t.minutes / 60).toFixed(1) + " h" : t.minutes + " min");
     cell(tr, `${pct(t.ret, 2)} (${sgnUsd(t.pl)})`, "mono " + cls(t.pl));
     tr.title = `in: ${t.why_in || ""}\nout: ${t.why_out || ""}`; tt.append(tr);

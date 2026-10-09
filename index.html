@@ -47,6 +47,23 @@ header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18p
   display:flex;flex-direction:column;gap:14px;min-width:0}
 .panel.live{box-shadow:0 0 0 1px rgba(46,229,157,.08),0 20px 60px -30px var(--glow-g)}
 .panel.ai{box-shadow:0 0 0 1px rgba(167,139,250,.08),0 20px 60px -30px var(--glow-v)}
+.panel.chat{box-shadow:0 0 0 1px rgba(90,169,255,.1),0 20px 60px -30px rgba(90,169,255,.3)}
+.tag.chatp{background:rgba(90,169,255,.16);color:var(--blue)}
+.grid.single{grid-template-columns:minmax(0,820px);justify-content:center}
+.grid.all3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1200px){.grid.all3{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.grid.all3{grid-template-columns:1fr}}
+.picker{position:relative;display:inline-flex;align-items:center}
+.picker select{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.07);border:1px solid var(--card-b);color:var(--text);
+  font:700 14px Inter,sans-serif;padding:9px 38px 9px 14px;border-radius:12px;cursor:pointer;outline:none;min-height:42px}
+.picker select:focus{border-color:var(--blue)}
+.picker select option{background:#0d1424;color:var(--text)}
+.picker::after{content:"▾";position:absolute;right:14px;pointer-events:none;color:var(--muted);font-size:13px}
+.thought{font-size:13px;line-height:1.5;padding:8px 10px;border-radius:10px;background:rgba(90,169,255,.06);border:1px solid rgba(90,169,255,.12)}
+.thought .t{color:var(--faint);font-size:11.5px;margin-right:6px}
+.lessons{display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.45}
+.lessons div::before{content:"📓 ";}
+.why{color:var(--muted);font-size:12px}
 .ph{display:flex;align-items:center;gap:10px}
 .ph h2{font-size:15px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
 .tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.04em}
@@ -117,6 +134,7 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
   .big{font-size:32px}
   .stats{gap:8px}.stat{padding:8px 10px}.stat .v{font-size:15px}
   .wrow{grid-template-columns:58px 44px 1fr 62px;gap:8px;font-size:12.5px}
+  .picker{order:3;width:100%;flex:none}.picker select{width:100%}.updated{order:4}
   .ev{grid-template-columns:78px 1fr;font-size:12px}
   .chartbox{height:170px}
   .gauge-labels span:first-child{display:none}
@@ -139,15 +157,23 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
 <div id="app" class="wrap hidden">
   <header>
     <div class="logo"><span class="dot"></span>Bot HQ</div>
+    <label class="picker" title="Choose which account to look at">
+      <select id="view" aria-label="Choose which account to look at">
+        <option value="all">📊 All accounts</option>
+        <option value="live">💵 S&amp;P Bot (real money)</option>
+        <option value="ai">🤖 AI Day Trader (paper)</option>
+        <option value="chat">🧠 Chatbot Trader (paper)</option>
+      </select>
+    </label>
     <div class="spacer"></div>
     <span class="updated" id="updated">—</span>
     <button class="btn" id="refresh">↻ Refresh</button>
     <button class="btn" id="lockbtn" title="Forget the password on this device">🔒 Lock</button>
   </header>
 
-  <div class="grid">
+  <div class="grid" id="grid">
     <!-- LIVE S&P BOT -->
-    <section class="panel live">
+    <section class="panel live" data-view="live">
       <div class="ph"><h2>S&amp;P Bot</h2><span class="tag real">💵 REAL MONEY</span><div class="spacer"></div><span id="l-mode" class="pill">—</span></div>
       <div id="l-err" class="err hidden"></div>
       <div>
@@ -174,7 +200,7 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
     </section>
 
     <!-- AI PAPER BOT -->
-    <section class="panel ai">
+    <section class="panel ai" data-view="ai">
       <div class="ph"><h2>AI Day Trader</h2><span class="tag paper">🤖 PAPER</span><div class="spacer"></div><span id="a-status" class="pill">—</span></div>
       <div id="a-err" class="err hidden"></div>
       <div>
@@ -199,6 +225,34 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
       <details><summary>Weekly learning reports</summary><div style="height:8px"></div><div id="a-reports"></div></details>
       <details open><summary>Recent activity</summary><div style="height:8px"></div><div class="feed" id="a-feed"></div></details>
       <div class="sub" id="a-model"></div>
+    </section>
+
+    <!-- CHATBOT PAPER TRADER -->
+    <section class="panel chat" data-view="chat">
+      <div class="ph"><h2>Chatbot Trader</h2><span class="tag chatp">🧠 PAPER</span><div class="spacer"></div><span id="c-status" class="pill">—</span></div>
+      <div id="c-err" class="err hidden"></div>
+      <div>
+        <div class="big mono" id="c-eq">—</div>
+        <div class="sub" id="c-sub">—</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="l">Trades</div><div class="v mono" id="c-n">—</div></div>
+        <div class="stat"><div class="l">Win rate</div><div class="v mono" id="c-win">—</div></div>
+        <div class="stat"><div class="l">Total P&amp;L</div><div class="v mono" id="c-pnl">—</div></div>
+      </div>
+      <div><h3>What it's thinking</h3><div style="height:8px"></div><div class="watch" id="c-thoughts"></div></div>
+      <div>
+        <h3>Open positions</h3><div style="height:6px"></div>
+        <div class="tablewrap"><table><thead><tr><th>Stock</th><th>Style</th><th>Buy → Now</th><th>Target / Stop</th><th>Result</th></tr></thead><tbody id="c-pos"></tbody></table></div>
+        <div id="c-plans"></div>
+      </div>
+      <div><h3>Paper account value</h3><div style="height:8px"></div><div class="chartbox"><canvas id="c-chart"></canvas></div></div>
+      <div>
+        <h3>Trades</h3><div style="height:6px"></div>
+        <div class="tablewrap"><table><thead><tr><th>Day</th><th>Stock</th><th>Style</th><th>Held</th><th>Result</th></tr></thead><tbody id="c-trades"></tbody></table></div>
+      </div>
+      <details open><summary>Its lessons for tomorrow</summary><div style="height:8px"></div><div class="lessons" id="c-lessons"></div></details>
+      <details><summary>Recent activity</summary><div style="height:8px"></div><div class="feed" id="c-feed"></div></details>
     </section>
   </div>
   <footer>Encrypted end-to-end · unlocked only in this browser · refreshes every 2 minutes</footer>
@@ -405,6 +459,73 @@ function renderAI(A) {
   $("a-model").textContent = `AI model: trained on ${M.trained_rows ? M.trained_rows.toLocaleString() : "?"} moments through ${M.trained_through || "?"}` + (M.retrained ? ` · last retrained ${M.retrained.replace("T", " ")}` : "");
 }
 
+function cell(tr, text, c) { const td = document.createElement("td"); td.textContent = text; if (c) td.className = c; tr.append(td); return td; }
+function emptyRow(tb, n, text) { const tr = document.createElement("tr"); const td = cell(tr, text, "empty"); td.colSpan = n; tb.append(tr); }
+const px = x => x == null ? "?" : "$" + (x >= 1 ? x.toFixed(2) : x.toFixed(4));
+
+function renderChat(C) {
+  showErr("c-err", C.error); if (C.error) return;
+  setText("c-eq", usd(C.equity));
+  const ch = C.equity - C.start_equity;
+  $("c-sub").textContent = `${sgnUsd(ch)} (${pct(ch / C.start_equity, 2)}) since it started with ${usd(C.start_equity, 0)}` +
+    (C.calls_today ? ` · asked the chatbot ${C.calls_today}× today` : "");
+  setText("c-n", String(C.n_trades));
+  setText("c-win", C.n_trades ? (C.wins / C.n_trades * 100).toFixed(0) + "%" : "—");
+  setText("c-pnl", sgnUsd(C.pnl), cls(C.pnl));
+  const st = $("c-status"), s = C.status || "";
+  st.className = "pill " + (s.startsWith("holding") ? "hold" : s === "trading" ? "watch" : "idle");
+  st.textContent = s.startsWith("holding") ? "📈 " + s : s === "trading" ? "👀 trading" : s.startsWith("paused") ? "⏸ " + s : "🌙 " + s;
+  const th = $("c-thoughts"); th.textContent = "";
+  const thoughts = (C.thoughts || []).filter(x => x && x.length > 6).slice(-5).reverse();
+  if (!thoughts.length) th.innerHTML = '<div class="empty">Nothing yet — it starts thinking out loud at 9:30 AM ET.</div>';
+  for (const x of thoughts) {
+    const d = document.createElement("div"); d.className = "thought";
+    const t = document.createElement("span"); t.className = "t mono"; t.textContent = x.slice(0, 5);
+    d.append(t, x.slice(6)); th.append(d);
+  }
+  const tb = $("c-pos"); tb.textContent = "";
+  if (!C.positions.length) emptyRow(tb, 5, "Not holding anything right now.");
+  for (const p of C.positions) {
+    const tr = document.createElement("tr");
+    cell(tr, p.sym); cell(tr, p.style); cell(tr, `${px(p.entry)} → ${px(p.now)}`);
+    cell(tr, `${px(p.target)} / ${px(p.stop)}`, "mono"); cell(tr, `${pct(p.pct, 2)} (${sgnUsd(p.pl)})`, "mono " + cls(p.pl));
+    tr.title = "why: " + (p.reason || ""); tb.append(tr);
+    const why = document.createElement("tr"); const w = cell(why, "why: " + (p.reason || "—"), "why"); w.colSpan = 5; tb.append(why);
+  }
+  const pl = $("c-plans"); pl.textContent = "";
+  for (const p of C.plans || []) {
+    const d = document.createElement("div"); d.className = "why"; d.style.marginTop = "8px";
+    d.textContent = `⏳ Plan: buy ${p.sym} ${p.above ? "if it breaks above " + px(p.above) : "if it dips to " + px(p.below)} · $${Math.round(p.dollars || 0)} ${p.style} — ${p.reason || ""}`;
+    pl.append(d);
+  }
+  const h = (C.history || []).filter(x => x.eq != null);
+  lineChart("c-chart", ["start", ...h.map(x => x.d.slice(5))], [{label: "Chatbot paper account",
+    data: [C.start_equity, ...h.map(x => x.eq)], color: "#5aa9ff", fill: "rgba(90,169,255,.1)"}]);
+  const tt = $("c-trades"); tt.textContent = "";
+  if (!C.trades.length) emptyRow(tt, 5, "No trades yet.");
+  for (const t of C.trades.slice().reverse()) {
+    const tr = document.createElement("tr");
+    cell(tr, (t.day || "").slice(5)); cell(tr, t.symbol); cell(tr, t.style);
+    cell(tr, t.minutes >= 1440 ? Math.round(t.minutes / 1440) + " d" : t.minutes >= 60 ? (t.minutes / 60).toFixed(1) + " h" : t.minutes + " min");
+    cell(tr, `${pct(t.ret, 2)} (${sgnUsd(t.pl)})`, "mono " + cls(t.pl));
+    tr.title = `in: ${t.why_in || ""}\nout: ${t.why_out || ""}`; tt.append(tr);
+  }
+  const ls = $("c-lessons"); ls.textContent = "";
+  if (!C.lessons || !C.lessons.length) ls.innerHTML = '<div class="empty" style="list-style:none">It writes its first lessons after the close on its first day.</div>';
+  for (const x of C.lessons || []) { const d = document.createElement("div"); d.textContent = x; ls.append(d); }
+  feed("c-feed", C.events);
+}
+
+const VIEW_KEY = "bothq.view.v1";
+function applyView() {
+  let v = "all"; try { v = localStorage.getItem(VIEW_KEY) || "all"; } catch {}
+  $("view").value = v;
+  document.querySelectorAll("[data-view]").forEach(p => p.classList.toggle("hidden", v !== "all" && p.dataset.view !== v));
+  $("grid").className = "grid " + (v === "all" ? "all3" : "single");
+  Object.values(charts).forEach(c => c.resize());
+}
+$("view").onchange = () => { try { localStorage.setItem(VIEW_KEY, $("view").value); } catch {} applyView(); };
+
 let lastGen = null;
 function show(data) {
   $("lock").classList.add("hidden"); $("app").classList.remove("hidden");
@@ -412,6 +533,8 @@ function show(data) {
   tick();
   if (data.live) renderLive(data.live);
   if (data.ai) renderAI(data.ai);
+  if (data.chat) renderChat(data.chat);
+  applyView();
 }
 function tick() {
   if (!lastGen) return;

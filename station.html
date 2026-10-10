@@ -55,7 +55,7 @@ canvas{display:block;width:100%;height:auto;border:1px solid #1e3a5c;border-radi
     <a class="btn" href="./">BOT HQ</a>
   </header>
   <div class="main">
-    <div class="stage"><canvas id="c" width="960" height="640"></canvas></div>
+    <div class="stage"><canvas id="c" width="960" height="800"></canvas></div>
     <div class="side">
       <div class="box"><h2 id="status">CONNECTING…</h2>
         <div class="replay" id="replayRow"><span id="replayLbl">LIVE</span><div class="bar"><i id="prog"></i></div></div></div>
@@ -105,16 +105,17 @@ async function refresh() {
 $("unlock").onclick = unlock; $("pw").onkeydown = e => { if (e.key === "Enter") unlock(); };
 
 // ===================== the station map =====================
-const C = $("c"), X = C.getContext("2d"), T = 16, W = 60, H = 40, F = '"Share Tech Mono",monospace';
+const C = $("c"), X = C.getContext("2d"), T = 16, W = 60, H = 50, F = '"Share Tech Mono",monospace';
 const ROOMS = [
   {x:0,y:2,w:16,h:13,l:"POD 01 // SPENCER",c:'#4da3ff'}, {x:0,y:15,w:16,h:12,l:"POD 02 // AVA",c:'#ffb03d'},
   {x:16,y:2,w:28,h:25,l:"COMMAND DECK",c:'#22e4ff'}, {x:44,y:2,w:16,h:13,l:"POD 03 // CHAD",c:'#3dffa2'},
   {x:44,y:15,w:16,h:12,l:"MEMORY CORE",c:'#9d6bff'}, {x:0,y:27,w:30,h:13,l:"BRIEFING ROOM",c:'#ff3df2'},
-  {x:30,y:27,w:30,h:13,l:"SIMULATION CHAMBER",c:'#22ffd5'}];
+  {x:30,y:27,w:30,h:13,l:"SIMULATION CHAMBER",c:'#22ffd5'},
+  {x:0,y:40,w:30,h:9,l:"POD 04 // JACE (TWIN)",c:'#ff5fa2'}, {x:30,y:40,w:30,h:9,l:"POD 05 // JAX (TWIN)",c:'#ffe14d'}];
 const wall = [...Array(H)].map(() => Array(W).fill(false));
 ROOMS.forEach(r => { for (let i = r.x; i < r.x + r.w; i++) { wall[r.y][i] = true; wall[Math.min(r.y + r.h, H - 1)][i] = true; }
   for (let j = r.y; j <= Math.min(r.y + r.h, H - 1); j++) { wall[j][r.x] = true; wall[j][Math.min(r.x + r.w, W - 1)] = true; } });
-const DOORS = [[16,7,1,3],[16,19,1,3],[44,7,1,3],[44,19,1,3],[6,15,3,1],[50,15,3,1],[10,27,3,1],[21,27,4,1],[35,27,4,1],[50,27,3,1],[30,32,1,3]];
+const DOORS = [[16,7,1,3],[16,19,1,3],[44,7,1,3],[44,19,1,3],[6,15,3,1],[50,15,3,1],[10,27,3,1],[21,27,4,1],[35,27,4,1],[50,27,3,1],[30,32,1,3],[10,40,3,1],[46,40,3,1],[30,43,1,3]];
 DOORS.forEach(([x,y,w,h]) => { for (let i = 0; i < w; i++) for (let j = 0; j < h; j++) wall[y + j][x + i] = false; });
 function path(a, b) {
   const k = (x, y) => y * W + x, sx = Math.round(a[0]), sy = Math.round(a[1]), tx = Math.round(b[0]), ty = Math.round(b[1]);
@@ -130,16 +131,21 @@ function path(a, b) {
 }
 const P = {desk_sp:[8,7],desk_ai:[8,20],desk_ch:[52,7],screen:[30,9],screen2:[26,9],news:[20,14],globe:[30,19],globe2:[35,21],
   crystal:[51,21],seat_sp:[9,34.6],seat_ai:[15,34.2],seat_ch:[21,34.6],dock_sp:[5,11],dock_ai:[5,23],dock_ch:[55,11],
-  sim:[42,33],sim2:[38,31],sim3:[44,36],lounge:[24,23],term1:[36,13],term2:[36,24],term3:[21,24],pod_sp:[11,11],pod_ai:[11,23],pod_ch:[48,11]};
+  sim:[42,33],sim2:[38,31],sim3:[44,36],lounge:[24,23],term1:[36,13],term2:[36,24],term3:[21,24],pod_sp:[11,11],pod_ai:[11,23],pod_ch:[48,11],
+  desk_jace:[8,46.5],dock_jace:[4,46],pod_jace:[26,46],desk_jax:[52,46.5],dock_jax:[56,46],pod_jax:[33,46],
+  seat_jace:[25,34.2],seat_jax:[4,34.2],sim_jace:[35,31],sim_jace2:[36,37],sim_jax:[40,37],sim_jax2:[44,30]};
 const WANDER = {sp:['desk_sp','screen','lounge','pod_sp','globe'], ai:['desk_ai','news','globe2','term3','pod_ai'],
-  ch:['desk_ch','screen2','globe','term1','term2','news','pod_ch']};
+  ch:['desk_ch','screen2','globe','term1','term2','news','pod_ch'],
+  jace:['desk_jace','pod_jace','screen','term3','news','lounge'], jax:['desk_jax','pod_jax','screen2','globe2','term1','term2']};
+const TWINS = ['jace', 'jax'], twin = id => TWINS.includes(id);
 
 // ===================== bots =====================
 const BOTS = [{id:'sp',name:'SPENCER',role:'S&P bot · real money',col:'#4da3ff'},{id:'ai',name:'AVA',role:'AI day trader · paper',col:'#ffb03d'},
-  {id:'ch',name:'CHAD',role:'chatbot · paper',col:'#3dffa2'}];
+  {id:'ch',name:'CHAD',role:'chatbot · paper · the control',col:'#3dffa2'},
+  {id:'jace',name:'JACE',role:'twin · simulated',col:'#ff5fa2'},{id:'jax',name:'JAX',role:'twin · simulated',col:'#ffe14d'}];
 const B = {}; BOTS.forEach(b => { B[b.id] = b; Object.assign(b, {p:P['dock_' + b.id].slice(), path:[], dir:1, walk:0, say:null, sayT:0, wait:0,
   q:[], evq:[], chg:true, speak:0, recent:[]}); });
-let D = null, tick = 0, talk = null, board = [], meet = null, phase = null, mode = 'live', following = null;
+let boardTitle = 'BRIEFING // DAILY RESULTS', D = null, tick = 0, talk = null, board = [], meet = null, phase = null, mode = 'live', following = null;
 const floaters = [], feed = [];
 const clean = s => (s || '').replace(/\s*--\s*\d{4}-\d\d-\d\d/g, '').replace(/\b\d{4}-\d\d-\d\d\b/g, '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B1C}\u{2B1B}\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
 const first = s => clean((s || '').replace(/^switch ON \| /, 'Checked: ').split(' | ')[0]);
@@ -157,12 +163,12 @@ function fastF() { return mode === 'replay' ? 0.4 : 1; }     // replay moves the
 
 // what a real event looks like on the station: where the bot walks, and what it says there
 function placeFor(bot, kind, text) {
-  if (phase === 'practice') return ['sim', 'sim2', 'sim3'][text.length % 3];
+  if (phase === 'practice') return twin(bot) ? ['sim_' + bot, 'sim_' + bot + '2'][text.length % 2] : ['sim', 'sim2', 'sim3'][text.length % 3];
   if (kind === 'buy' || kind === 'sell' || kind === 'order' || kind === 'plan' || kind === 'check') return 'desk_' + bot;
   if (kind === 'news' || kind === 'brief' || /headline|news/i.test(text)) return 'news';
   if (kind === 'note') return 'crystal';
   if (kind === 'watch') return 'globe2';
-  if (bot === 'ch') return ['screen2', 'globe', 'term1', 'term2'][(text.length) % 4];
+  if (bot === 'ch' || twin(bot)) return ['screen2', 'globe', 'term1', 'term2', 'screen'][(text.length) % 5];
   return bot === 'sp' ? 'screen' : 'term3';
 }
 function act(b, ev) {
@@ -183,16 +189,18 @@ function queueEvent(b, ev) {
 }
 
 // ===================== facts for small talk (only things the bots really did) =====================
-function lastOf(bot, kinds) { const ev = (D && D.station.bots[bot].events) || []; for (let i = ev.length - 1; i >= 0; i--) if (kinds.includes(ev[i][1])) return ev[i]; return null; }
+function evOf(bot) { return twin(bot) ? (((D.station.twins || {})[bot] || {}).events || []) : (D.station.bots[bot].events || []); }
+function lastOf(bot, kinds) { const ev = D ? evOf(bot) : []; for (let i = ev.length - 1; i >= 0; i--) if (kinds.includes(ev[i][1])) return ev[i]; return null; }
 function dayLine(bot) {
+  if (twin(bot)) { const c = D[bot] || {}; const n = (c.trades || []).filter(t => t.day === c.day).length; return `${n} sale${n === 1 ? '' : 's'} so far, ${fmtPct(pct(bot))} on the day.`; }
   if (bot === 'ch') { const c = D.chat || {}; const n = (c.trades || []).filter(t => t.day === (c.day)).length; return `${n} sale${n === 1 ? '' : 's'} so far, ${fmtPct(pct('ch'))} on the day.`; }
   if (bot === 'ai') { const a = D.ai || {}; return a.hold ? `Holding ${a.hold.sym}. ${fmtPct(pct('ai'))} on the day.` : `No position right now. ${fmtPct(pct('ai'))} on the day.`; }
   const l = D.live || {}; return `Holding ${(l.positions || []).map(p => p.sym).join(' and ') || 'cash'}. ${fmtPct(pct('sp'))} on the day.`;
 }
 function makeTalk(a, o) {
   const opts = [];
-  const cb = lastOf('ch', ['buy']), parts = cb ? cb[2].split(' | ') : [];
-  if (o.id === 'ch' && cb) opts.push([[a.id, `Saw you ${first(parts[0]).replace('BOUGHT', 'bought').replace(/\(.*?\)/, '').trim()}. Plan?`], ['ch', clean(parts[1] || 'Watching it closely.')]]);
+  const cb = lastOf(o.id, ['buy']), parts = cb ? cb[2].split(' | ') : [];
+  if ((o.id === 'ch' || twin(o.id)) && cb) opts.push([[a.id, `Saw you ${first(parts[0]).replace('BOUGHT', 'bought').replace(/\(.*?\)/, '').trim()}. Plan?`], [o.id, clean(parts[1] || 'Watching it closely.')]]);
   const an = lastOf('ai', ['news', 'watch']);
   if (o.id === 'ai' && an) opts.push([[a.id, 'Anything in the news?'], ['ai', first(an[2])]]);
   opts.push([[a.id, 'How is your day going?'], [o.id, dayLine(o.id)], [a.id, dayLine(a.id)]]);
@@ -202,7 +210,8 @@ function makeTalk(a, o) {
 // ===================== results =====================
 function sessionDay() { const m = D.station.market; return m.is_open ? D.generated.slice(0, 10) : (m.last_close || '').slice(0, 10); }
 function pct(bot) {
-  const s = bot === 'sp' ? D.live : bot === 'ai' ? D.ai : D.chat; if (!s || !s.history || !s.history.length) return null;
+  const s = bot === 'sp' ? D.live : bot === 'ai' ? D.ai : bot === 'ch' ? D.chat : D[bot]; if (!s || s.error) return null;
+  if (!s.history || !s.history.length) return s.equity && s.start_equity ? s.equity / s.start_equity - 1 : null;
   const h = s.history.filter(x => x.eq), last = h[h.length - 1];
   if (!last) return null;
   const prev = h.length >= 2 ? h[h.length - 2].eq : (s.start_equity || s.put_in);
@@ -223,8 +232,18 @@ function briefingLines() {
   if (cs) { const p = cs[2].split(' | '); L.push(['ch', clean(p.find(x => /trades/.test(x)) || p[1] || '')]);
     const tm = p.find(x => /Tomorrow/i.test(x)); if (tm) L.push(['ch', cut(clean(tm), 110)]); }
   else L.push(['ch', `${fmtPct(pct('ch'))} on the day.`]);
+  TWINS.forEach(id => { if (!twinsOn()) return; const s = lastOf(id, ['summary']);
+    L.push([id, s ? clean(s[2].split(' | ').find(x => /trades|sales/.test(x)) || s[2].split(' | ')[1] || '') : `${fmtPct(pct(id))} on the day.`]); });
+  const dbt = debateToday();
+  if (dbt) { L.push(['_leave']);                          // Chad is the control: he leaves before the twins talk
+    dbt.talk.forEach(([w, t]) => L.push([w, t, 'talk']));
+    TWINS.forEach(id => { const d = (dbt.decisions || {})[id]; if (d && d.summary) L.push([id, 'decided: ' + d.summary, 'talk']); }); }
   return L;
 }
+function twinsOn() { return !!(D.station.twins && D.jace && !D.jace.error); }
+function debateToday() { const d = (D.station.twins || {}).debate; return d && d.date === sessionDay() ? d : null; }
+function recentDebate() { const d = (D.station.twins || {}).debate; return d && Date.now() / 1000 - d.t < 1200 ? d : null; }
+function twinStudy(id) { const c = (D[id] || {}).core || []; return [`reviewing my day… ${c.length} core lessons`].concat(c.slice(0, 2).map((x, i) => `core #${i + 1}: ` + x)); }
 function studyLines() {
   const m = D.station.memory || {}, L = [`reviewing… ${(m.core || []).length} core lessons, ${m.library || 0} in the library`];
   (m.core || []).slice(0, 4).forEach((c, i) => L.push(`core #${i + 1}: ` + c));
@@ -234,36 +253,46 @@ function studyLines() {
 
 // ===================== phases (the hidden schedule) =====================
 const STATUS = {trading:'MARKET OPEN // TRADING', briefing:'MARKET CLOSED // DAILY BRIEFING', study:'CHAD REVIEWING LESSONS',
-  night:'AFTER HOURS // UNITS CHARGING', weekend:'WEEKEND // UNITS CHARGING', practice:'WEEKEND // CHAD IN THE SIMULATOR'};
+  night:'AFTER HOURS // UNITS CHARGING', weekend:'WEEKEND // UNITS CHARGING', practice:'WEEKEND // PRACTICE IN THE SIMULATOR',
+  debate:'TWIN DISCUSSION // CHAD NOT INVITED'};
+function practicing(id) { return id === 'ch' ? D.station.practice.running : twin(id) && ((D.station.twins || {})[id] || {}).practicing; }
 function livePhase() {
   const m = D.station.market, now = Date.now();
   if (m.is_open) return 'trading';
   const since = (now - Date.parse(m.last_close)) / 60000, gapDays = (Date.parse(m.next_open) - Date.parse(m.last_close)) / 864e5;
   if (since >= 0 && since < 20) return 'briefing';
   if (since >= 20 && since < 40) return 'study';
-  if (gapDays > 1.2 && since > 600) return D.station.practice.running ? 'practice' : 'weekend';
+  if (recentDebate() && !(since >= 0 && since < 40)) return 'debate';
+  if (gapDays > 1.2 && since > 600) return ['ch'].concat(TWINS).some(practicing) ? 'practice' : 'weekend';
   return 'night';
 }
 function enter(ph) {
-  phase = ph; talk = null; meet = null; board = [];
+  phase = ph; talk = null; meet = null; board = []; boardTitle = ph === 'debate' ? 'TWIN DISCUSSION // CHAD NOT INVITED' : 'BRIEFING // DAILY RESULTS';
   $("status").textContent = (mode === 'replay' ? 'REPLAY // ' : '') + STATUS[ph];
   BOTS.forEach(b => { b.q = []; b.evq = []; b.wait = 0; b.speak = 0; });
   if (ph === 'trading') { BOTS.forEach(b => { b.chg = false; b.wait = Math.random() * 60 | 0; }); log('<span class="d">— market open —</span>'); }
   if (ph === 'briefing') { log('<span class="d">— market closed // all units to the briefing room —</span>');
-    BOTS.forEach(b => goTo(b, 'seat_' + b.id)); meet = {lines: briefingLines(), i: 0, t: 60}; }
+    BOTS.forEach(b => twin(b.id) && !twinsOn() ? charge(b) : goTo(b, 'seat_' + b.id)); meet = {lines: briefingLines(), i: 0, t: 60}; }
+  if (ph === 'debate') { log('<span class="d">— the twins meet to discuss (Chad, the control, is not invited) —</span>');
+    BOTS.forEach(b => { if (!twin(b.id) && !(b.id === 'ch' && practicing('ch'))) charge(b); }); TWINS.forEach(id => goTo(B[id], 'seat_' + id));
+    const d = recentDebate(); meet = {lines: d.talk.map(([w, t]) => [w, t, 'talk']).concat(TWINS.filter(id => ((d.decisions || {})[id] || {}).summary).map(id => [id, 'decided: ' + d.decisions[id].summary, 'talk'])), i: 0, t: 60}; }
   if (ph === 'study') { log('<span class="d">— Chad to the memory core —</span>'); charge(B.sp); charge(B.ai); goTo(B.ch, 'crystal');
+    TWINS.forEach(id => { if (!twinsOn()) return charge(B[id]); goTo(B[id], 'desk_' + id); twinStudy(id).forEach(l => B[id].q.push(() => { say(B[id], l, ''); B[id].wait = 200 * fastF(); })); B[id].q.push(() => charge(B[id])); });
     const L = studyLines(); L.forEach((l, i) => B.ch.q.push(() => { say(B.ch, l, 'g'); B.ch.wait = 200 * fastF(); }));
     if (mode === 'replay') B.ch.q.push(() => charge(B.ch)); }
   if (ph === 'night' || ph === 'weekend') { log('<span class="d">— units charging —</span>'); BOTS.forEach(charge); }
-  if (ph === 'practice') { log('<span class="d">— weekend // Chad practicing on a past day —</span>'); charge(B.sp); charge(B.ai); goTo(B.ch, 'sim'); }
+  if (ph === 'practice') { log('<span class="d">— weekend // practicing on past days —</span>'); charge(B.sp); charge(B.ai);
+    ['ch'].concat(TWINS).forEach(id => practicing(id) ? goTo(B[id], id === 'ch' ? 'sim' : 'sim_' + id) : charge(B[id])); }
 }
 function next(b) {
   if (b.q.length) { b.q.shift()(); return; }
-  if (phase === 'trading' || (phase === 'practice' && b.id === 'ch')) {
+  if (twin(b.id) && !twinsOn()) { charge(b); return; }      // the twins haven't started yet
+  if (phase === 'trading' || (phase === 'practice' && practicing(b.id))) {
     if (b.evq.length) { act(b, b.evq.shift()); return; }
     if (phase === 'practice') return;
     // nothing new from this bot: small talk now and then, otherwise wander the station
-    if (!talk && Math.random() < 0.35) { const o = BOTS.filter(x => x !== b && !x.path.length && !x.evq.length)[Math.random() * 2 | 0];
+    if (!talk && Math.random() < 0.35) { const ok = BOTS.filter(x => x !== b && !x.path.length && !x.evq.length && !x.chg && !((b.id === 'ch' && twin(x.id)) || (x.id === 'ch' && twin(b.id))));
+      const o = ok[Math.random() * ok.length | 0];
       if (o) { talk = {a: b, o, lines: makeTalk(b, o), i: -1, t: 0, ready: false}; o.wait = 99999; o.q = [];
         const t = [[2,0],[-2,0],[0,2],[0,-2]].map(([dx,dy]) => [Math.round(o.p[0]) + dx, Math.round(o.p[1]) + dy]).find(([x,y]) => wall[y] && wall[y][x] === false);
         goTo(b, t || o.p); return; } }
@@ -279,10 +308,14 @@ function runTalk() {
   const [who, s] = talk.lines[talk.i]; say(B[who], s, ''); talk.t = 170 * fastF();
 }
 function runMeet() {
-  if (!meet || phase !== 'briefing' || BOTS.some(b => b.path.length)) return; if (--meet.t > 0) return;
+  if (!meet || !['briefing', 'debate'].includes(phase) || BOTS.some(b => b.path.length && !b.leaving)) return; if (--meet.t > 0) return;
   if (meet.i >= meet.lines.length) { if (mode === 'live') meet = {lines: meet.lines, i: 0, t: 1800}; else meet.done = true; return; }
-  const [w, l] = meet.lines[meet.i++]; board.push([w, l]); B[w].speak = 170 * fastF();
-  log(`<b style="color:${B[w].col}">${B[w].name}:</b> ${esc(l)}`); meet.t = 190 * fastF();
+  const [w, l, kind] = meet.lines[meet.i++];
+  if (w === '_leave') { B.ch.leaving = true; goTo(B.ch, 'crystal'); B.ch.q.push(() => { B.ch.leaving = false; });
+    say(B.ch, "I'm the control. I'll be in the memory core.", 'd'); boardTitle = 'TWIN DISCUSSION // CHAD NOT INVITED'; board = []; meet.t = 200 * fastF(); return; }
+  if (!B[w]) return;
+  board.push([w, l]); B[w].speak = (kind === 'talk' ? 260 : 170) * fastF();
+  log(`<b style="color:${B[w].col}">${B[w].name}:</b> ${esc(l)}`); meet.t = (kind === 'talk' ? Math.min(600, 120 + l.length * 2.2) : 190) * fastF();
 }
 
 // ===================== live feed of new events =====================
@@ -295,8 +328,12 @@ function freshEvents(key, ev) {
 function feedLive() {
   if (mode !== 'live' || !D) return;
   const st = D.station;
-  if (phase === 'trading') BOTS.forEach(b => { const v = st.bots[b.id]; freshEvents(b.id + v.day, v.events || []).forEach(e => queueEvent(b, e)); });
-  if (phase === 'practice') freshEvents('practice' + D.generated.slice(0, 10), st.practice.events || []).forEach(e => queueEvent(B.ch, e));
+  const tw = st.twins || {};
+  if (phase === 'trading') BOTS.forEach(b => { const v = twin(b.id) ? tw[b.id] : st.bots[b.id]; if (!v) return;
+    freshEvents(b.id + v.day, (v.events || []).filter(e => !['talk', 'decision'].includes(e[1]))).forEach(e => queueEvent(b, e)); });
+  if (phase === 'practice') { const day = D.generated.slice(0, 10);
+    freshEvents('practice' + day, st.practice.events || []).forEach(e => queueEvent(B.ch, e));
+    TWINS.forEach(id => tw[id] && freshEvents('practice' + id + day, tw[id].practice || []).forEach(e => queueEvent(B[id], e))); }
 }
 
 // ===================== replay of the last session =====================
@@ -304,8 +341,8 @@ let R = null;
 const REPLAY_FRAMES = 150 * 60;          // the trading day plays in about 2.5 minutes
 function startReplay() {
   if (!D) return; mode = 'replay'; R = {f: 0, evs: []};
-  BOTS.forEach(b => { const ev = D.station.bots[b.id].events || []; let n = 0;
-    ev.forEach(e => { if (e[1] === 'scan' && (n++ % 6)) return; if (['summary', 'review'].includes(e[1])) return;
+  BOTS.forEach(b => { const ev = evOf(b.id); let n = 0;
+    ev.forEach(e => { if (e[1] === 'scan' && (n++ % 6)) return; if (['summary', 'review', 'talk', 'decision'].includes(e[1])) return;
       const [h, m, s] = e[0].split(':').map(Number), sec = h * 3600 + m * 60 + s - (9.5 * 3600);
       if (sec > 6.5 * 3600) return; R.evs.push({f: Math.max(0, sec) / (6.5 * 3600) * REPLAY_FRAMES, b, e}); }); });
   R.evs.sort((x, y) => x.f - y.f); feed.length = 0; log('<span class="d">— replay of the last session —</span>');
@@ -318,7 +355,7 @@ function runReplay() {
   while (R.evs.length && R.evs[0].f <= R.f) { const x = R.evs.shift(); queueEvent(x.b, x.e); }
   if (phase === 'trading' && R.f > REPLAY_FRAMES + 240) enter('briefing');
   else if (phase === 'briefing' && meet && meet.done) { R.after = (R.after || 0) + 1; if (R.after > 240) { R.after = 0; enter('study'); } }
-  else if (phase === 'study' && !B.ch.q.length && B.ch.chg) { R.after = (R.after || 0) + 1; if (R.after > 120) { enter('night'); R.end = R.f; } }
+  else if (phase === 'study' && BOTS.every(b => !b.q.length && b.chg)) { R.after = (R.after || 0) + 1; if (R.after > 120) { enter('night'); R.end = R.f; } }
   else if (phase === 'night' && R.f - R.end > 600) stopReplay();
   const total = REPLAY_FRAMES + 4200; $("prog").style.width = Math.min(100, R.f / total * 100) + '%';
 }
@@ -344,11 +381,12 @@ function buildTape() {
   (D.chat.positions || []).forEach(p => it.push([`${p.sym} ${fmtPct(p.pct)}`, p.pct]));
   if (D.ai.hold) it.push(['AVA HOLDS ' + D.ai.hold.sym, 0]);
   (D.live.positions || []).forEach(p => it.push([`${p.sym} $${p.price.toFixed(2)}`, 0]));
+  TWINS.forEach(id => ((D[id] || {}).positions || []).forEach(p => it.push([`${id.toUpperCase()}: ${p.sym} ${fmtPct(p.pct)}`, p.pct])));
   BOTS.forEach(b => it.push([`${b.name} ${fmtPct(pct(b.id))}`, pct(b.id) || 0]));
   tape = it;
 }
 function drawMap() {
-  X.fillStyle = '#02040b'; X.fillRect(0, 0, 960, 640);
+  X.fillStyle = '#02040b'; X.fillRect(0, 0, 960, 800);
   ROOMS.forEach(r => { const x = r.x * T, y = r.y * T, w = r.w * T, h = r.h * T, g = X.createLinearGradient(x, y, x, y + h);
     g.addColorStop(0, a(r.c, .13)); g.addColorStop(1, 'rgba(4,8,20,1)'); X.fillStyle = g; X.fillRect(x, y, w, h); X.strokeStyle = a(r.c, .07);
     for (let i = x; i < x + w; i += T) { X.beginPath(); X.moveTo(i, y); X.lineTo(i, y + h); X.stroke(); }
@@ -375,7 +413,11 @@ function drawMap() {
   for (let k = 0; k < 4; k++) { X.beginPath(); X.ellipse(gx, gy, Math.abs(32 * Math.cos(tick / 50 + k * .8)), 32, 0, 0, 7); X.strokeStyle = 'rgba(34,228,255,.3)'; X.stroke(); }
   X.beginPath(); X.ellipse(gx, gy, 50, 10, tick / 90, 0, 7); X.strokeStyle = 'rgba(255,61,242,.55)'; X.stroke(); noglow();
   terminal(37, 13, '#22e4ff'); terminal(37, 24, '#22e4ff'); terminal(20, 24, '#22e4ff');
-  terminal(8, 6, '#4da3ff'); terminal(8, 19, '#ffb03d'); terminal(52, 6, '#3dffa2');
+  terminal(8, 6, '#4da3ff'); terminal(8, 19, '#ffb03d'); terminal(52, 6, '#3dffa2'); terminal(8, 46, '#ff5fa2'); terminal(52, 46, '#ffe14d');
+  [['jace', 15], ['jax', 36]].forEach(([id, x0]) => { const c = B[id].col, d = D[id] || {}; panel(x0 * T, 42.5 * T, 9 * T, 4.5 * T, c);
+    txt(id === 'jace' ? 'JACE // BRAIN: INKLING' : 'JAX // BRAIN: GEMMA', x0 * T + 6, 43.5 * T, c, 8, '700 Orbitron');
+    txt(d.error ? 'starting monday' : `$${(d.equity || 1000).toFixed(2)} · ${((d.core || []).length)} lessons`, x0 * T + 6, 44.6 * T, '#eafcff', 10);
+    txt(`discussions held: ${(D.station.twins || {}).debates_held || 0}`, x0 * T + 6, 45.7 * T, a(c, .8), 9); });
   // charging docks
   BOTS.forEach(b => { const [dx, dy] = P['dock_' + b.id], c = b.col, x = dx * T + 8, y = dy * T + 8;
     X.beginPath(); X.ellipse(x, y + 14, 18, 6, 0, 0, 7); X.fillStyle = a(c, .15); X.fill(); glow(c, 12); X.strokeStyle = a(c, .8); X.stroke();
@@ -389,12 +431,12 @@ function drawMap() {
   for (let i = 0; i < nc; i++) { const ly = 17 * T + i * 16 + Math.sin(tick / 25 + i) * 2; panel(45.5 * T, ly, 46, 12, '#9d6bff'); txt('CORE ' + (i + 1), 45.5 * T + 6, ly + 9, '#c7a8ff', 8); }
   // briefing room: table + holo-board
   const bx = 15 * T, by = 37.6 * T; X.beginPath(); X.ellipse(bx, by, 150, 18, 0, 0, 7); X.fillStyle = 'rgba(255,61,242,.10)'; X.fill(); glow('#ff3df2', 16); X.strokeStyle = 'rgba(255,61,242,.8)'; X.stroke(); noglow();
-  { const x0 = 1.5 * T, y0 = 28.3 * T, w = 27 * T, h = 3.9 * T; panel(x0, y0, w, h, '#ff3df2'); txt('BRIEFING // DAILY RESULTS', x0 + 8, y0 + 12, '#ff3df2', 8, '700 Orbitron');
-    BOTS.forEach((b, k) => { const v = pct(b.id) || 0, bh = Math.min(30, Math.abs(v) * 1500) + 3, bxx = x0 + w - 66 + k * 20, base = y0 + h - 14;
+  { const x0 = 1.5 * T, y0 = 28.3 * T, w = 27 * T, h = 3.9 * T; panel(x0, y0, w, h, '#ff3df2'); txt(boardTitle, x0 + 8, y0 + 12, '#ff3df2', 8, '700 Orbitron');
+    BOTS.forEach((b, k) => { const v = pct(b.id) || 0, bh = Math.min(30, Math.abs(v) * 1500) + 3, bxx = x0 + w - 106 + k * 20, base = y0 + h - 14;
       X.fillStyle = a(b.col, .7); glow(b.col, 8); X.fillRect(bxx, base - bh, 12, bh); noglow(); txt((v >= 0 ? '+' : '') + (v * 100).toFixed(1), bxx - 3, base + 10, b.col, 8); });
-    X.fillStyle = 'rgba(255,61,242,.3)'; X.fillRect(x0 + w - 74, y0 + 8, 1, h - 16);
-    if (phase === 'briefing' && board.length) board.slice(-3).forEach(([who, l], i, arr) => { const y = y0 + 25 + i * 13;
-      txt(B[who].name + ':', x0 + 8, y, B[who].col, 10, '700 Orbitron'); X.save(); X.beginPath(); X.rect(x0 + 70, y - 11, w - 150, 14); X.clip();
+    X.fillStyle = 'rgba(255,61,242,.3)'; X.fillRect(x0 + w - 114, y0 + 8, 1, h - 16);
+    if (['briefing', 'debate'].includes(phase) && board.length) board.slice(-3).forEach(([who, l], i, arr) => { const y = y0 + 25 + i * 13;
+      txt(B[who].name + ':', x0 + 8, y, B[who].col, 10, '700 Orbitron'); X.save(); X.beginPath(); X.rect(x0 + 70, y - 11, w - 190, 14); X.clip();
       txt(l, x0 + 76, y, i === arr.length - 1 ? '#ffffff' : '#9fb3cc', 11); X.restore(); });
     else txt('— no briefing in progress —', x0 + 8, y0 + 38, '#6f5a7a', 10); }
   // simulation chamber
@@ -404,7 +446,7 @@ function drawMap() {
   panel(46 * T, 29 * T, 12 * T, 8.5 * T, '#22ffd5'); txt('SIM // DATE HIDDEN', 46.6 * T, 30.2 * T, '#22ffd5', 9, '700 Orbitron');
   txt(`PRACTICE DAYS DONE: ${D.station.practice.days_done || 0}`, 46.6 * T, 36.8 * T, a('#22ffd5', .8), 9); wave(46.6 * T, 33.5 * T, 10.8 * T, 14, '#22ffd5', tick / 40);
   const dim = (i, al) => { const r = ROOMS[i]; X.fillStyle = `rgba(1,2,6,${al})`; X.fillRect(r.x * T + 1, r.y * T + 1, r.w * T - 1, r.h * T - 1); };
-  if (phase === 'weekend' || phase === 'practice' || phase === 'night') { dim(2, .45); dim(5, .5); }
+  if (phase === 'weekend' || phase === 'practice' || phase === 'night') { dim(2, .45); if (phase !== 'debate') dim(5, .5); }
   if (phase !== 'practice') dim(6, .55);
 }
 function countdown() {
@@ -458,13 +500,14 @@ let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(1000, now - last); last = now; while (acc >= 1000 / 60) { step(); acc -= 1000 / 60; } draw(); requestAnimationFrame(loop); }
 
 // ===================== follow a bot =====================
-C.onclick = e => { const r = C.getBoundingClientRect(), mx = (e.clientX - r.left) * 960 / r.width, my = (e.clientY - r.top) * 640 / r.height;
+C.onclick = e => { const r = C.getBoundingClientRect(), mx = (e.clientX - r.left) * 960 / r.width, my = (e.clientY - r.top) * 800 / r.height;
   const hit = BOTS.find(b => Math.hypot(b.p[0] * T + 8 - mx, b.p[1] * T - 2 - my) < 24); following = hit && hit !== following ? hit : null; showFollow(); };
 function showFollow() {
   const el = $("follow"); if (!following) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const b = following;
   let pos = [];
   if (b.id === 'sp') pos = (D.live.positions || []).map(p => `${p.sym} · $${p.value.toFixed(2)}`);
   if (b.id === 'ai') pos = D.ai.hold ? [`${D.ai.hold.sym} · ${D.ai.hold.qty} shares @ $${D.ai.hold.entry}`] : [];
+  if (twin(b.id)) pos = ((D[b.id] || {}).positions || []).map(p => `${p.sym} · ${(+p.qty).toFixed(4).replace(/\.?0+$/, '')} @ $${(+p.entry).toFixed(2)} · <span class="${p.pct >= 0 ? 'g' : 'r'}">${fmtPct(p.pct)}</span>`);
   if (b.id === 'ch') pos = (D.chat.positions || []).map(p => `${p.sym} · ${p.qty} @ $${p.entry} · <span class="${p.pct >= 0 ? 'g' : 'r'}">${fmtPct(p.pct)}</span>`);
   el.innerHTML = `<h2 style="color:${b.col}">FOLLOWING // ${b.name}</h2><div class="note">${b.role}</div>
     <div class="row"><span class="k">Today</span><span>${fmtPct(pct(b.id))}</span></div>

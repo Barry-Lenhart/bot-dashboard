@@ -244,13 +244,13 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
       <div><h3>What it's thinking</h3><div style="height:8px"></div><div class="watch" id="c-thoughts"></div></div>
       <div>
         <h3>Open positions</h3><div style="height:6px"></div>
-        <div class="tablewrap"><table><thead><tr><th>Stock</th><th>Style</th><th>Buy → Now</th><th>Target / Stop</th><th>Result</th></tr></thead><tbody id="c-pos"></tbody></table></div>
+        <div class="tablewrap"><table><thead><tr><th>Stock</th><th>Held</th><th>Buy → Now</th><th>Target / Stop</th><th>Result</th></tr></thead><tbody id="c-pos"></tbody></table></div>
         <div id="c-plans"></div>
       </div>
       <div><h3>Paper account value</h3><div style="height:8px"></div><div class="chartbox"><canvas id="c-chart"></canvas></div></div>
       <div>
         <h3>Trades</h3><div style="height:6px"></div>
-        <div class="tablewrap"><table><thead><tr><th>Day</th><th>Stock</th><th>Style</th><th>Held</th><th>Result</th></tr></thead><tbody id="c-trades"></tbody></table></div>
+        <div class="tablewrap"><table><thead><tr><th>Day</th><th>Stock</th><th>Shares</th><th>Held</th><th>Result</th></tr></thead><tbody id="c-trades"></tbody></table></div>
       </div>
       <details open><summary>Its lessons for tomorrow</summary><div style="height:8px"></div><div class="lessons" id="c-lessons"></div></details>
       <details open><summary>🧰 Its wishlist — what it says would help it</summary><div style="height:8px"></div><div class="lessons" id="c-wish"></div></details>
@@ -490,15 +490,15 @@ function renderChat(C) {
   if (!C.positions.length) emptyRow(tb, 5, "Not holding anything right now.");
   for (const p of C.positions) {
     const tr = document.createElement("tr");
-    cell(tr, p.sym); cell(tr, p.style); cell(tr, `${px(p.entry)} → ${px(p.now)}`);
-    cell(tr, `${px(p.target)} / ${px(p.stop)}`, "mono"); cell(tr, `${pct(p.pct, 2)} (${sgnUsd(p.pl)})`, "mono " + cls(p.pl));
+    cell(tr, p.sym + (p.qty % 1 ? ` (${(+p.qty).toFixed(2)} sh)` : ` (${p.qty} sh)`)); cell(tr, p.held || ""); cell(tr, `${px(p.entry)} → ${px(p.now)}`);
+    cell(tr, `${p.target ? px(p.target) : "—"} / ${p.stop ? px(p.stop) : "—"}`, "mono"); cell(tr, `${pct(p.pct, 2)} (${sgnUsd(p.pl)})`, "mono " + cls(p.pl));
     tr.title = "why: " + (p.reason || ""); tb.append(tr);
     const why = document.createElement("tr"); const w = cell(why, "why: " + (p.reason || "—"), "why"); w.colSpan = 5; tb.append(why);
   }
   const pl = $("c-plans"); pl.textContent = "";
   for (const p of C.plans || []) {
     const d = document.createElement("div"); d.className = "why"; d.style.marginTop = "8px";
-    d.textContent = `⏳ Plan: buy ${p.sym} ${p.above ? "if it breaks above " + px(p.above) : "if it dips to " + px(p.below)} · $${Math.round(p.dollars || 0)} ${p.style} — ${p.reason || ""}`;
+    d.textContent = `⏳ Plan: buy ${p.sym} ${p.above ? "if it rises to " + px(p.above) : "if it falls to " + px(p.below)} · $${Math.round(p.dollars || 0)} — ${p.reason || ""}`;
     pl.append(d);
   }
   const h = (C.history || []).filter(x => x.eq != null);
@@ -508,7 +508,7 @@ function renderChat(C) {
   if (!C.trades.length) emptyRow(tt, 5, "No trades yet.");
   for (const t of C.trades.slice().reverse()) {
     const tr = document.createElement("tr");
-    cell(tr, (t.day || "").slice(5)); cell(tr, t.symbol); cell(tr, t.style + (t.practice ? " 🧪" : ""));
+    cell(tr, (t.day || "").slice(5)); cell(tr, t.symbol + (t.practice ? " 🧪" : "")); cell(tr, t.qty != null ? String(+(+t.qty).toFixed(2)) : "");
     cell(tr, t.minutes >= 1440 ? Math.round(t.minutes / 1440) + " d" : t.minutes >= 60 ? (t.minutes / 60).toFixed(1) + " h" : t.minutes + " min");
     cell(tr, `${pct(t.ret, 2)} (${sgnUsd(t.pl)})`, "mono " + cls(t.pl));
     tr.title = `in: ${t.why_in || ""}\nout: ${t.why_out || ""}`; tt.append(tr);

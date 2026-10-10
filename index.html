@@ -63,6 +63,7 @@ header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18p
 .thought .t{color:var(--faint);font-size:11.5px;margin-right:6px}
 .lessons{display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.45}
 .lessons div::before{content:"📓 ";}
+.lessons div.wish::before{content:"🧰 ";}
 .why{color:var(--muted);font-size:12px}
 .ph{display:flex;align-items:center;gap:10px}
 .ph h2{font-size:15px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
@@ -252,6 +253,7 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
         <div class="tablewrap"><table><thead><tr><th>Day</th><th>Stock</th><th>Style</th><th>Held</th><th>Result</th></tr></thead><tbody id="c-trades"></tbody></table></div>
       </div>
       <details open><summary>Its lessons for tomorrow</summary><div style="height:8px"></div><div class="lessons" id="c-lessons"></div></details>
+      <details open><summary>🧰 Its wishlist — what it says would help it</summary><div style="height:8px"></div><div class="lessons" id="c-wish"></div></details>
       <details><summary>Recent activity</summary><div style="height:8px"></div><div class="feed" id="c-feed"></div></details>
     </section>
   </div>
@@ -514,6 +516,12 @@ function renderChat(C) {
   const ls = $("c-lessons"); ls.textContent = "";
   if (!C.lessons || !C.lessons.length) ls.innerHTML = '<div class="empty" style="list-style:none">It writes its first lessons after the close on its first day.</div>';
   for (const x of C.lessons || []) { const d = document.createElement("div"); d.textContent = x; ls.append(d); }
+  const wl = $("c-wish"); wl.textContent = "";
+  if (!C.wishlist || !C.wishlist.length) wl.innerHTML = '<div class="empty">It adds wishes in its end-of-day review.</div>';
+  for (const w of C.wishlist || []) {
+    const d = document.createElement("div"); d.className = "wish";
+    d.textContent = w.wish + (w.count > 1 ? `  (asked ${w.count}×, since ${w.first.slice(5)})` : `  (${w.first.slice(5)})`); wl.append(d);
+  }
   feed("c-feed", C.events);
 }
 

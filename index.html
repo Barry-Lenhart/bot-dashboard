@@ -252,6 +252,7 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
         <h3>Trades</h3><div style="height:6px"></div>
         <div class="tablewrap"><table><thead><tr><th>Day</th><th>Stock</th><th>Shares</th><th>Held</th><th>Result</th></tr></thead><tbody id="c-trades"></tbody></table></div>
       </div>
+      <div class="sub" id="c-practice"></div>
       <details open><summary>Its lessons for tomorrow</summary><div style="height:8px"></div><div class="lessons" id="c-lessons"></div></details>
       <details open><summary>🧰 Its wishlist — what it says would help it</summary><div style="height:8px"></div><div class="lessons" id="c-wish"></div></details>
       <details><summary>Recent activity</summary><div style="height:8px"></div><div class="feed" id="c-feed"></div></details>
@@ -516,6 +517,10 @@ function renderChat(C) {
   const ls = $("c-lessons"); ls.textContent = "";
   if (!C.lessons || !C.lessons.length) ls.innerHTML = '<div class="empty" style="list-style:none">It writes its first lessons after the close on its first day.</div>';
   for (const x of C.lessons || []) { const d = document.createElement("div"); d.textContent = x; ls.append(d); }
+  const P = C.practice || {};
+  $("c-practice").textContent = P.days ? `🧪 Weekend practice: ${P.days} past days replayed · ${P.sales} sales, `
+    + `${P.sales ? Math.round(P.wins / P.sales * 100) : 0}% winners` + (P.avg != null ? `, average ${pct(P.avg, 2)} per sale` : "")
+    : "🧪 Weekend practice starts Saturday (past days replayed in fast-forward).";
   const wl = $("c-wish"); wl.textContent = "";
   if (!C.wishlist || !C.wishlist.length) wl.innerHTML = '<div class="empty">It adds wishes in its end-of-day review.</div>';
   for (const w of C.wishlist || []) {

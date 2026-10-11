@@ -415,7 +415,7 @@ function drawMap() {
   terminal(37, 13, '#22e4ff'); terminal(37, 24, '#22e4ff'); terminal(20, 24, '#22e4ff');
   terminal(8, 6, '#4da3ff'); terminal(8, 19, '#ffb03d'); terminal(52, 6, '#3dffa2'); terminal(8, 46, '#ff5fa2'); terminal(52, 46, '#ffe14d');
   [['jace', 15], ['jax', 36]].forEach(([id, x0]) => { const c = B[id].col, d = D[id] || {}; panel(x0 * T, 42.5 * T, 9 * T, 4.5 * T, c);
-    txt(id === 'jace' ? 'JACE // BRAIN: INKLING' : 'JAX // BRAIN: GEMMA', x0 * T + 6, 43.5 * T, c, 8, '700 Orbitron');
+    txt(id === 'jace' ? 'JACE // BRAIN: DOTS 3' : 'JAX // BRAIN: APODEX', x0 * T + 6, 43.5 * T, c, 8, '700 Orbitron');
     txt(d.error ? 'starting monday' : `$${(d.equity || 1000).toFixed(2)} · ${((d.core || []).length)} lessons`, x0 * T + 6, 44.6 * T, '#eafcff', 10);
     txt(`discussions held: ${(D.station.twins || {}).debates_held || 0}`, x0 * T + 6, 45.7 * T, a(c, .8), 9); });
   // charging docks

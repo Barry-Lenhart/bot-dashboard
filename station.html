@@ -10,24 +10,37 @@
 <style>
 :root{--ink:#d8f3ff;--dim:#6f8aa6;--cyan:#22e4ff;--green:#3dffa2;--red:#ff4d6d}
 *{box-sizing:border-box}
-body{margin:0;background:#03060f radial-gradient(ellipse at 50% 0,#0b1838 0,#03060f 60%) fixed;color:var(--ink);font:14px/1.45 "Share Tech Mono",ui-monospace,monospace;min-height:100vh}
+body{margin:0;background:#06030d radial-gradient(ellipse at 50% 0,#1a0c33 0,#06030d 60%) fixed;color:var(--ink);font:14px/1.45 "Share Tech Mono",ui-monospace,monospace;min-height:100vh}
 .wrap{max-width:1320px;margin:0 auto;padding:16px}
 header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-h1{font:700 20px Orbitron,sans-serif;letter-spacing:3px;margin:0;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+h1{font:700 20px Orbitron,sans-serif;letter-spacing:3px;margin:0;color:#ffcf7a;text-shadow:0 0 12px #ff9d2a88}
 .spacer{flex:1}
-a.btn,button{font:500 11px Orbitron,sans-serif;letter-spacing:1px;background:#08142a;color:var(--cyan);border:1px solid #1f6a9a;border-radius:20px;padding:8px 14px;cursor:pointer;text-decoration:none}
-button.on{background:var(--cyan);color:#001;box-shadow:0 0 14px var(--cyan)}
+a.btn,button{font:500 11px Orbitron,sans-serif;letter-spacing:1px;background:#1a0d33;color:#d9c2ff;border:1px solid #5b34a3;border-radius:20px;padding:8px 14px;cursor:pointer;text-decoration:none}
+button.on{background:#9d6bff;color:#0b0118;box-shadow:0 0 14px #9d6bff}
 .main{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
-.stage{flex:0 1 960px;min-width:0}
-canvas{display:block;width:100%;height:auto;border:1px solid #1e3a5c;border-radius:10px;box-shadow:0 0 30px #0af3;background:#02040b;cursor:pointer}
+.stage{flex:0 1 960px;min-width:0;position:relative}
+#dlg{position:absolute;z-index:5;left:50%;bottom:10px;transform:translateX(-50%);width:min(560px,calc(100% - 16px))}
+.dlg-wake{display:flex;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid #4b2a86}.dlg-wake button{background:#ff9a3d;color:#1a0d33;border:0;border-radius:6px;padding:6px 12px;font:700 12px Orbitron,monospace;cursor:pointer;white-space:nowrap}.dlg-wake button:disabled{background:#3a2466;color:#c9a7ff;cursor:default}.dlg-wake span{font-size:12px;color:#c9a7ff}
+.dlg{background:linear-gradient(160deg,#160c2cf4,#07040ff4);border:2px solid var(--c);border-radius:6px;box-shadow:0 0 0 2px #000,0 0 26px color-mix(in srgb,var(--c) 45%,transparent);font-size:12px}
+.dlg-head{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #2c2050}
+.dlg-name{font:700 13px Orbitron,sans-serif;letter-spacing:1px;color:var(--c);text-shadow:0 0 8px var(--c)}
+.dlg-role{color:var(--dim);font-size:11px;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dlg-title{font:700 9px Orbitron,sans-serif;letter-spacing:2px;color:#b9a6ff;white-space:nowrap}
+button.dlg-x{padding:1px 9px;border-radius:4px;font-size:14px;line-height:1.2}
+.dlg-body{max-height:min(220px,32vh);overflow:auto;padding:4px 10px 8px}
+.dlg-line{display:grid;grid-template-columns:38px 70px 1fr;gap:6px;padding:5px 0;border-bottom:1px dashed #241a3e;word-break:break-word}
+.dlg-t{color:var(--dim)}.dlg-k{font:700 9px Orbitron,sans-serif;letter-spacing:1px;padding-top:2px;color:#9fb3cc}
+.tone-buy .dlg-k,.tone-gain .dlg-k{color:var(--green)}.tone-loss .dlg-k{color:var(--red)}.tone-quiet .dlg-m{color:#9aa6bd;font-style:italic}
+.dlg-empty{color:var(--dim);padding:10px 0}
+canvas{display:block;width:100%;height:auto;border:1px solid #3a2466;border-radius:8px;box-shadow:0 0 30px #7a3cff2a;background:#020108;cursor:pointer}
 .side{flex:1;min-width:270px;display:flex;flex-direction:column;gap:10px}
-.box{background:linear-gradient(160deg,#0c1a33cc,#060c1acc);border:1px solid #1f4a72;border-radius:10px;padding:12px;box-shadow:0 0 14px #0af2}
-.box h2{font:700 11px Orbitron,sans-serif;letter-spacing:2px;margin:0 0 8px;color:var(--cyan)}
+.box{background:linear-gradient(160deg,#21104acc,#10061fcc);border:1px solid #4b2a86;border-radius:8px;padding:12px;box-shadow:0 0 16px #7a3cff22}
+.box h2{font:700 11px Orbitron,sans-serif;letter-spacing:2px;margin:0 0 8px;color:#c9a7ff}
 .row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0}
-.feed{font-size:12px;max-height:340px;overflow:auto}.feed div{padding:5px 0;border-bottom:1px solid #12304d;word-break:break-word}
+.feed{font-size:12px;max-height:340px;overflow:auto}.feed div{padding:5px 0;border-bottom:1px solid #2c1a52;word-break:break-word}
 .g{color:var(--green)}.r{color:var(--red)}.d{color:var(--dim)}
 .replay{display:flex;align-items:center;gap:8px;font-size:12px;margin-top:8px}
-.bar{flex:1;height:6px;background:#0a1a30;border-radius:3px;position:relative;overflow:hidden}
+.bar{flex:1;height:6px;background:#1a0d33;border-radius:3px;position:relative;overflow:hidden}
 .bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#ff3df2,var(--cyan))}
 .note{font-size:11px;color:var(--dim)}
 .hidden{display:none!important}
@@ -55,18 +68,29 @@ canvas{display:block;width:100%;height:auto;border:1px solid #1e3a5c;border-radi
     <a class="btn" href="./">BOT HQ</a>
   </header>
   <div class="main">
-    <div class="stage"><canvas id="c" width="960" height="800"></canvas></div>
+    <div class="stage"><canvas id="c" width="1920" height="2304"></canvas><div id="dlg" class="hidden"></div></div>
     <div class="side">
       <div class="box"><h2 id="status">CONNECTING…</h2>
         <div class="replay" id="replayRow"><span id="replayLbl">LIVE</span><div class="bar"><i id="prog"></i></div></div></div>
       <div class="box"><h2>UNITS // LAST SESSION</h2><div id="units"></div></div>
       <div class="box hidden" id="follow"></div>
       <div class="box"><h2>STATION LOG</h2><div class="feed" id="feed"></div></div>
-      <p class="note">Tap a bot to follow it. Everything shown comes from the bots' real logs; nothing here can place or change a trade.</p>
+      <p class="note">Tap a bot to open its chat. Everything shown comes from the bots' real logs; nothing here can place or change a trade.</p>
     </div>
   </div>
 </div>
 
+<script src="station-art.js"></script>
+<script src="station-sprites.js"></script>
+<script src="station-furniture.js"></script>
+<script src="station-tech.js"></script>
+<script src="station-machines.js"></script>
+<script src="station-crew.js"></script>
+<script src="station-comms.js"></script>
+<script src="station-web.js"></script>
+<script src="station-walls.js"></script>
+<script src="station-chat.js"></script>
+<script src="station-dialog.js"></script>
 <script>
 // ===================== unlock (same scheme and saved key as Bot HQ) =====================
 const DATA_URL = "https://raw.githubusercontent.com/Barry-Lenhart/bot-dashboard/data/data.enc.json";
@@ -105,35 +129,44 @@ async function refresh() {
 $("unlock").onclick = unlock; $("pw").onkeydown = e => { if (e.key === "Enter") unlock(); };
 
 // ===================== the station map =====================
-const C = $("c"), X = C.getContext("2d"), T = 16, W = 60, H = 50, F = '"Share Tech Mono",monospace';
+const C = $("c"), X = C.getContext("2d"), T = 16, W = 60, H = 72, MW = W * T, MH = H * T, F = '"Share Tech Mono",monospace';
+// Rooms are floor areas (in 16px tiles) floating in space; corridors join them. Only floors are walkable.
 const ROOMS = [
-  {x:0,y:2,w:16,h:13,l:"POD 01 // SPENCER",c:'#4da3ff'}, {x:0,y:15,w:16,h:12,l:"POD 02 // AVA",c:'#ffb03d'},
-  {x:16,y:2,w:28,h:25,l:"COMMAND DECK",c:'#22e4ff'}, {x:44,y:2,w:16,h:13,l:"POD 03 // CHAD",c:'#3dffa2'},
-  {x:44,y:15,w:16,h:12,l:"MEMORY CORE",c:'#9d6bff'}, {x:0,y:27,w:30,h:13,l:"BRIEFING ROOM",c:'#ff3df2'},
-  {x:30,y:27,w:30,h:13,l:"SIMULATION CHAMBER",c:'#22ffd5'},
-  {x:0,y:40,w:30,h:9,l:"POD 04 // JACE (TWIN)",c:'#ff5fa2'}, {x:30,y:40,w:30,h:9,l:"POD 05 // JAX (TWIN)",c:'#ffe14d'}];
-const wall = [...Array(H)].map(() => Array(W).fill(false));
-ROOMS.forEach(r => { for (let i = r.x; i < r.x + r.w; i++) { wall[r.y][i] = true; wall[Math.min(r.y + r.h, H - 1)][i] = true; }
-  for (let j = r.y; j <= Math.min(r.y + r.h, H - 1); j++) { wall[j][r.x] = true; wall[j][Math.min(r.x + r.w, W - 1)] = true; } });
-const DOORS = [[16,7,1,3],[16,19,1,3],[44,7,1,3],[44,19,1,3],[6,15,3,1],[50,15,3,1],[10,27,3,1],[21,27,4,1],[35,27,4,1],[50,27,3,1],[30,32,1,3],[10,40,3,1],[46,40,3,1],[30,43,1,3]];
-DOORS.forEach(([x,y,w,h]) => { for (let i = 0; i < w; i++) for (let j = 0; j < h; j++) wall[y + j][x + i] = false; });
+  {k:'sp',   x:2,  y:3,  w:12, h:11, l:"POD 01 // SPENCER", c:'#4da3ff'}, {k:'ai',  x:2,  y:16, w:12, h:11, l:"POD 02 // AVA", c:'#ffb03d'},
+  {k:'deck', x:17, y:3,  w:26, h:22, l:"COMMAND DECK", c:'#22e4ff'},      {k:'ch',  x:46, y:3,  w:12, h:11, l:"POD 03 // CHAD", c:'#3dffa2'},
+  {k:'mem',  x:46, y:16, w:12, h:11, l:"MEMORY CORE", c:'#9d6bff'},       {k:'brief', x:2, y:29, w:26, h:10, l:"BRIEFING ROOM", c:'#ff3df2'},
+  {k:'sim',  x:32, y:29, w:26, h:10, l:"SIMULATION CHAMBER", c:'#22ffd5'},
+  {k:'jace', x:2,  y:41, w:18, h:8,  l:"POD 04 // JACE (TWIN)", c:'#ff5fa2'}, {k:'spare', x:24, y:41, w:12, h:8, l:"POD 06 // WEB SCOUT", c:'#ff9a3d'},
+  {k:'jax',  x:40, y:41, w:18, h:8,  l:"POD 05 // JAX (TWIN)", c:'#ffe14d'},
+  {k:'fac',  x:2,  y:52, w:56, h:11, l:"WEB FOUNDRY", c:'#ff9a3d'}];
+const room = k => ROOMS.find(r => r.k === k);
+const CORRIDORS = [[14,7,3,3],[43,7,3,3],[10,14,3,2],[14,20,3,3],[43,20,3,3],[54,14,3,2],[40,25,3,4],
+  [10,27,3,2],[47,27,3,2],[28,32,4,3],[33,39,3,2],[20,44,4,3],[36,44,4,3],
+  [9,49,3,3],[28,49,4,3],[48,49,3,3]];
+const walk = [...Array(H)].map(() => Array(W).fill(false));
+ROOMS.map(r => [r.x, r.y, r.w, r.h]).concat(CORRIDORS).forEach(([x, y, w, h]) => {
+  for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) walk[j][i] = true; });
+const WALL_ROWS = 3;                                     // the back (north) wall of a room is this many tiles tall
+const northDoors = r => CORRIDORS.filter(([x, y, w, h]) => y + h === r.y && x >= r.x && x + w <= r.x + r.w);
+ROOMS.forEach(r => { const open = new Set(northDoors(r).flatMap(([x, , w]) => [...Array(w)].map((_, i) => x + i)));
+  for (let j = r.y; j < r.y + WALL_ROWS; j++) for (let i = r.x; i < r.x + r.w; i++) if (!open.has(i)) walk[j][i] = false; });
 function path(a, b) {
   const k = (x, y) => y * W + x, sx = Math.round(a[0]), sy = Math.round(a[1]), tx = Math.round(b[0]), ty = Math.round(b[1]);
   const prev = new Map([[k(sx, sy), -1]]), q = [[sx, sy]];
   while (q.length) { const [x, y] = q.shift(); if (x === tx && y === ty) break;
     for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) { const nx = x + dx, ny = y + dy;
-      if (nx < 0 || ny < 0 || nx >= W || ny >= H || wall[ny][nx] || prev.has(k(nx, ny))) continue; prev.set(k(nx, ny), k(x, y)); q.push([nx, ny]); } }
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H || !walk[ny][nx] || prev.has(k(nx, ny))) continue; prev.set(k(nx, ny), k(x, y)); q.push([nx, ny]); } }
   if (!prev.has(k(tx, ty))) return [];
   const out = []; let c = k(tx, ty); while (c !== -1) { out.unshift([c % W, Math.floor(c / W)]); c = prev.get(c); }
   const s = []; out.forEach((p, i) => { if (i === 0 || i === out.length - 1) { s.push(p); return; } const p0 = out[i - 1], p1 = out[i + 1];
     if (p0[0] - p[0] !== p[0] - p1[0] || p0[1] - p[1] !== p[1] - p1[1]) s.push(p); });
   s.shift(); s.push(b); return s;
 }
-const P = {desk_sp:[8,7],desk_ai:[8,20],desk_ch:[52,7],screen:[30,9],screen2:[26,9],news:[20,14],globe:[30,19],globe2:[35,21],
-  crystal:[51,21],seat_sp:[9,34.6],seat_ai:[15,34.2],seat_ch:[21,34.6],dock_sp:[5,11],dock_ai:[5,23],dock_ch:[55,11],
-  sim:[42,33],sim2:[38,31],sim3:[44,36],lounge:[24,23],term1:[36,13],term2:[36,24],term3:[21,24],pod_sp:[11,11],pod_ai:[11,23],pod_ch:[48,11],
-  desk_jace:[8,46.5],dock_jace:[4,46],pod_jace:[26,46],desk_jax:[52,46.5],dock_jax:[56,46],pod_jax:[33,46],
-  seat_jace:[25,34.2],seat_jax:[4,34.2],sim_jace:[35,31],sim_jace2:[36,37],sim_jax:[40,37],sim_jax2:[44,30]};
+const P = {desk_sp:[7,7],desk_ai:[7,20],desk_ch:[51,7],screen:[26,10],screen2:[33,10],news:[21,17],globe:[30,22],globe2:[35,22],
+  crystal:[52,23],seat_sp:[9,35.3],seat_ai:[15,35],seat_ch:[21,35.3],dock_sp:[4,11],dock_ai:[4,24],dock_ch:[55,11],
+  sim:[42,33],sim2:[38,32],sim3:[44,36],lounge:[25,20],term1:[39,14],term2:[39,23],term3:[20,23],pod_sp:[11,11],pod_ai:[11,24],pod_ch:[48,11],
+  desk_jace:[5,45],dock_jace:[3,47],pod_jace:[13,47.5],desk_jax:[54,45],dock_jax:[56,47],pod_jax:[45,47.5],
+  seat_jace:[25,35],seat_jax:[4,35],desk_sc:[29.5,45.6],dock_sc:[34,47],press_sc:[9.5,57.6],tray_sc:[39.6,16.6],dish_sc:[41.2,8.6],holo_sc:[30,21],sim_jace:[35,32],sim_jace2:[36,37],sim_jax:[40,37],sim_jax2:[44,33]};
 const WANDER = {sp:['desk_sp','screen','lounge','pod_sp','globe'], ai:['desk_ai','news','globe2','term3','pod_ai'],
   ch:['desk_ch','screen2','globe','term1','term2','news','pod_ch'],
   jace:['desk_jace','pod_jace','screen','term3','news','lounge'], jax:['desk_jax','pod_jax','screen2','globe2','term1','term2']};
@@ -221,7 +254,8 @@ function pct(bot) {
 const fmtPct = v => v == null ? '—' : (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
 function units() {
   $("units").innerHTML = BOTS.map(b => { const v = pct(b.id);
-    return `<div class="row"><span style="color:${b.col}">◆ ${b.name} <span class="d">· ${b.role.split(' · ')[0]}</span></span><span class="${v == null ? 'd' : v >= 0 ? 'g' : 'r'}">${fmtPct(v)}</span></div>`; }).join('');
+    return `<div class="row"><span style="color:${b.col}">◆ ${b.name} <span class="d">· ${b.role.split(' · ')[0]}</span></span><span class="${v == null ? 'd' : v >= 0 ? 'g' : 'r'}">${fmtPct(v)}</span></div>`; }).join('') +
+    (window.StationWeb && web() ? `<div class="row"><span style="color:${SCOUT.col}">◆ SCOUT <span class="d">· website bot</span></span><span class="d">${StationWeb.summary(web()).waiting} ready</span></div>` : '');
 }
 function briefingLines() {
   const L = [];
@@ -294,7 +328,7 @@ function next(b) {
     if (!talk && Math.random() < 0.35) { const ok = BOTS.filter(x => x !== b && !x.path.length && !x.evq.length && !x.chg && !((b.id === 'ch' && twin(x.id)) || (x.id === 'ch' && twin(b.id))));
       const o = ok[Math.random() * ok.length | 0];
       if (o) { talk = {a: b, o, lines: makeTalk(b, o), i: -1, t: 0, ready: false}; o.wait = 99999; o.q = [];
-        const t = [[2,0],[-2,0],[0,2],[0,-2]].map(([dx,dy]) => [Math.round(o.p[0]) + dx, Math.round(o.p[1]) + dy]).find(([x,y]) => wall[y] && wall[y][x] === false);
+        const t = [[2,0],[-2,0],[0,2],[0,-2]].map(([dx,dy]) => [Math.round(o.p[0]) + dx, Math.round(o.p[1]) + dy]).find(([x,y]) => walk[y] && walk[y][x]);
         goTo(b, t || o.p); return; } }
     const opts = WANDER[b.id]; goTo(b, opts[Math.random() * opts.length | 0]); b.q.push(() => { b.wait = (240 + Math.random() * 360) * fastF(); });
   }
@@ -302,7 +336,7 @@ function next(b) {
 function runTalk() {
   if (!talk) return; const {a, o} = talk;
   if (phase !== 'trading') { o.wait = 0; talk = null; return; }
-  if (!talk.ready) { if (a.path.length) return; talk.ready = true; a.dir = Math.sign(o.p[0] - a.p[0]) || 1; o.dir = -a.dir; }
+  if (!talk.ready) { if (a.path.length) return; talk.ready = true; a.dir = Math.sign(o.p[0] - a.p[0]) || 1; o.dir = -a.dir; a.face = a.dir > 0 ? 'east' : 'west'; o.face = o.dir > 0 ? 'east' : 'west'; }
   if (--talk.t > 0) return; talk.i++;
   if (talk.i >= talk.lines.length) { o.wait = 60; a.wait = 60; talk = null; return; }
   const [who, s] = talk.lines[talk.i]; say(B[who], s, ''); talk.t = 170 * fastF();
@@ -366,7 +400,9 @@ const a = (c, al) => { const n = parseInt(c.slice(1), 16); return `rgba(${n >> 1
 const glow = (c, b) => { X.shadowColor = c; X.shadowBlur = b; }, noglow = () => { X.shadowBlur = 0; };
 const rr = (x, y, w, h, r) => { X.beginPath(); X.roundRect(x, y, w, h, r); };
 function txt(s, x, y, c, sz, f) { X.font = `${sz}px ${f || F}`; X.fillStyle = c; X.fillText(s, x, y); }
-function panel(x, y, w, h, c) { rr(x, y, w, h, 5); X.fillStyle = a(c, .10); X.fill(); glow(c, 10); X.strokeStyle = a(c, .75); X.stroke(); noglow(); }
+function panel(x, y, w, h, c) { rr(x, y, w, h, 3); X.fillStyle = '#05080d'; X.fill(); X.strokeStyle = '#1b2129'; X.lineWidth = 2; X.stroke(); X.lineWidth = 1;
+  rr(x + 2, y + 2, w - 4, h - 4, 2); X.fillStyle = a(c, .07); X.fill();
+  X.fillStyle = 'rgba(255,255,255,.025)'; for (let j = y + 3; j < y + h - 2; j += 3) X.fillRect(x + 3, j, w - 6, 1); }
 function wave(x, y, w, amp, c, ph, pts) { X.strokeStyle = c; glow(c, 8); X.beginPath();
   if (pts && pts.length > 2) { const lo = Math.min(...pts), hi = Math.max(...pts), rg = hi - lo || 1; pts.forEach((v, i) => { const px = x + i * w / (pts.length - 1), py = y + amp - (v - lo) / rg * amp * 2; i ? X.lineTo(px, py) : X.moveTo(px, py); }); }
   else for (let i = 0; i <= 40; i++) { const px = x + i * w / 40, py = y - Math.sin(i / 4 + ph) * amp - Math.sin(i * 1.3) * amp * .2; i ? X.lineTo(px, py) : X.moveTo(px, py); }
@@ -385,69 +421,344 @@ function buildTape() {
   BOTS.forEach(b => it.push([`${b.name} ${fmtPct(pct(b.id))}`, pct(b.id) || 0]));
   tape = it;
 }
-function drawMap() {
-  X.fillStyle = '#02040b'; X.fillRect(0, 0, 960, 800);
-  ROOMS.forEach(r => { const x = r.x * T, y = r.y * T, w = r.w * T, h = r.h * T, g = X.createLinearGradient(x, y, x, y + h);
-    g.addColorStop(0, a(r.c, .13)); g.addColorStop(1, 'rgba(4,8,20,1)'); X.fillStyle = g; X.fillRect(x, y, w, h); X.strokeStyle = a(r.c, .07);
-    for (let i = x; i < x + w; i += T) { X.beginPath(); X.moveTo(i, y); X.lineTo(i, y + h); X.stroke(); }
-    for (let j = y; j < y + h; j += T) { X.beginPath(); X.moveTo(x, j); X.lineTo(x + w, j); X.stroke(); } });
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (wall[y][x]) { X.fillStyle = '#0d1830'; X.fillRect(x * T, y * T, T, T); X.fillStyle = 'rgba(34,228,255,.18)'; X.fillRect(x * T, y * T, T, 2); }
-  DOORS.forEach(([x, y, w, h]) => { glow('#22e4ff', 14); X.fillStyle = `rgba(34,228,255,${.5 + .3 * Math.sin(tick / 14 + x)})`;
-    if (w === 1) { X.fillRect(x * T, y * T - 3, T, 3); X.fillRect(x * T, (y + h) * T, T, 3); } else { X.fillRect(x * T - 3, y * T, 3, T); X.fillRect((x + w) * T, y * T, 3, T); } noglow(); });
-  ROOMS.forEach(r => { X.font = '700 9px Orbitron'; const lw = X.measureText(r.l).width; rr(r.x * T + 20, r.y * T + 5, lw + 14, 14, 7);
-    X.fillStyle = '#02040b'; X.fill(); X.strokeStyle = a(r.c, .85); X.stroke(); txt(r.l, r.x * T + 27, r.y * T + 15, r.c, 9, '700 Orbitron'); });
-  // ticker along the top hull (real numbers)
-  X.save(); X.beginPath(); X.rect(0, 0, 960, 2 * T); X.clip(); X.fillStyle = '#050b18'; X.fillRect(0, 0, 960, 2 * T);
-  if (tape.length) { X.font = '700 13px Orbitron'; const gap = '      ', tw = tape.reduce((s, [t]) => s + X.measureText(t + gap).width, 0), off = -(tick * .9 % tw);
-    for (let k = 0; k < Math.ceil(960 / tw) + 1; k++) { let x = off + k * tw; tape.forEach(([t, v]) => { X.fillStyle = v < 0 ? '#ff4d6d' : v > 0 ? '#3dffa2' : '#22e4ff'; X.fillText(t, x, 21); x += X.measureText(t + gap).width; }); } }
-  X.restore();
+// ===================== art: everything is drawn by our own code (station-*.js), no image files =====================
+const LIB = n => [window.StationFurniture, window.StationTech, window.StationMachines, window.StationComms].find(L => L && L.NAMES.includes(n));
+// floors: metal plates with seams and rivets, a different pattern per room type
+const FLOOR = {deck: 'big', sp: 'plate', ai: 'plate', ch: 'plate', jace: 'plate', jax: 'plate', spare: 'plate',
+  brief: 'plate', sim: 'grate', mem: 'big', fac: 'tread', corridor: 'grate'};
+function floorFill(g, kind, x, y, w, h, c) {
+  const style = FLOOR[kind] || 'plate', s = style === 'big' ? 32 : 16, r = StationArt.rng(x * 7 + y * 13 + w);
+  g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+  g.fillStyle = '#12161e'; g.fillRect(x, y, w, h);
+  for (let j = y; j < y + h; j += s) for (let i = x; i < x + w; i += s) {
+    const v = r(); g.fillStyle = v < .15 ? '#171c26' : v > .9 ? '#0f131a' : '#151a23'; g.fillRect(i, j, s, s);
+    g.fillStyle = '#1d2330'; g.fillRect(i, j, s, 1); g.fillRect(i, j, 1, s);              // lit top/left edge
+    g.fillStyle = '#0a0d13'; g.fillRect(i, j + s - 1, s, 1); g.fillRect(i + s - 1, j, 1, s);   // dark seam
+    if (style === 'grate') { g.fillStyle = '#0c1017'; for (let k = 3; k < s - 2; k += 3) g.fillRect(i + 3, j + k, s - 6, 1); }
+    else if (style === 'tread') { g.fillStyle = '#1b212c'; for (let k = 2; k < s - 2; k += 4) g.fillRect(i + ((k / 4 | 0) % 2 ? 3 : 8), j + k, 4, 1); }
+    else { g.fillStyle = '#262d3a'; [[2, 2], [s - 3, 2], [2, s - 3], [s - 3, s - 3]].forEach(([a, b]) => g.fillRect(i + a, j + b, 1, 1)); }
+    if (style === 'big') { g.fillStyle = StationArt.hexA(c, .06); g.fillRect(i + 6, j + s / 2, s - 12, 1); }
+  }
+  g.fillStyle = StationArt.hexA(c, .04); g.fillRect(x, y, w, h);
+  g.restore();
+}
+// furniture and machines: [name, tile x, tile y, tiles wide, tiles high, options]. Machines that blink are drawn every frame.
+const deskBox = (d, m = 2) => ['desk', P[d][0] - 1.1, P[d][1] - 1.5, 3.2, 1.9, {monitors: m}];
+const PLACES = [
+  // pods: desk at the back wall, wall screens, locker, plant, a couch or crate
+  deskBox('desk_sp'), ['wallscreen', 3, 4.6, 2.6, 1.6, {color: '#4da3ff'}], ['rack', 10.2, 4.4, 1.6, 2.6], ['locker', 12.3, 4.0, 1.5, 2.6], ['plant', 2.1, 5.2, 1.2, 1.9],
+  ['crate', 2.3, 12.5, 1.5, 1.3],
+  deskBox('desk_ai'), ['wallscreen', 3, 17.6, 2.6, 1.6, {color: '#ffb03d'}], ['coffee', 2.2, 21.2, 1.4, 1.9], ['plant', 2.1, 18.2, 1.2, 1.9],
+  ['locker', 6.2, 24.0, 1.5, 2.5, {color: '#ffb03d'}], ['crate', 2.3, 25.5, 1.5, 1.3],
+  deskBox('desk_ch'), ['wallscreen', 53.3, 4, 2.6, 1.6, {color: '#3dffa2'}], ['rack', 48.2, 4.4, 1.6, 2.6], ['locker', 46.2, 4.0, 1.5, 2.6], ['plant', 56.7, 5.2, 1.2, 1.9],
+  ['couch', 46.3, 12.3, 3.0, 1.5, {color: '#3dffa2'}], ['crate', 50.4, 12.5, 1.5, 1.3],
+  deskBox('desk_jace'), ['locker', 16.2, 44.2, 1.4, 2.4, {color: '#ff5fa2'}], ['plant', 2.1, 42.4, 1.1, 1.8], ['pod', 14.4, 44.8, 1.4, 2.6, {color: '#ff5fa2'}],
+  deskBox('desk_jax'), ['locker', 42.4, 44.2, 1.4, 2.4, {color: '#ffe14d'}], ['plant', 56.9, 42.4, 1.1, 1.8], ['pod', 45.8, 44.8, 1.4, 2.6, {color: '#ffe14d'}],
   // command deck
-  panel(21 * T, 3.6 * T, 18 * T, 4.6 * T, '#22e4ff');
-  const L = D.live || {}, spyPts = (L.history || []).map(h => h.spy).filter(Boolean);
-  txt(`SPY ${L.spy ? L.spy.toFixed(2) : ''}  //  ${L.mode || ''}`, 21.6 * T, 4.6 * T, '#3dffa2', 11, '700 Orbitron');
-  X.lineWidth = 2; wave(21.6 * T, 6.2 * T, 16.8 * T, 14, '#3dffa2', tick / 60, spyPts.length > 2 ? spyPts : null); X.lineWidth = 1;
-  panel(17.4 * T, 10.5 * T, 5.5 * T, 3 * T, '#ffcc4d'); txt('NEWS WALL', 17.8 * T, 11.4 * T, '#ffcc4d', 9, '700 Orbitron');
-  for (let i = 0; i < 3; i++) { X.fillStyle = a('#ffcc4d', .5); X.fillRect(17.8 * T, 11.9 * T + i * 9, (3 + ((i + tick / 40 | 0) % 3)) * T * .8, 4); }
-  const gx = 30 * T, gy = 16.5 * T; X.beginPath(); X.ellipse(gx, gy + 40, 62, 12, 0, 0, 7); X.fillStyle = 'rgba(34,228,255,.10)'; X.fill();
-  glow('#22e4ff', 16); X.strokeStyle = 'rgba(34,228,255,.6)'; X.stroke(); X.beginPath(); X.arc(gx, gy, 32, 0, 7); X.strokeStyle = 'rgba(34,228,255,.75)'; X.stroke();
-  for (let k = 0; k < 4; k++) { X.beginPath(); X.ellipse(gx, gy, Math.abs(32 * Math.cos(tick / 50 + k * .8)), 32, 0, 0, 7); X.strokeStyle = 'rgba(34,228,255,.3)'; X.stroke(); }
-  X.beginPath(); X.ellipse(gx, gy, 50, 10, tick / 90, 0, 7); X.strokeStyle = 'rgba(255,61,242,.55)'; X.stroke(); noglow();
-  terminal(37, 13, '#22e4ff'); terminal(37, 24, '#22e4ff'); terminal(20, 24, '#22e4ff');
-  terminal(8, 6, '#4da3ff'); terminal(8, 19, '#ffb03d'); terminal(52, 6, '#3dffa2'); terminal(8, 46, '#ff5fa2'); terminal(52, 46, '#ffe14d');
-  [['jace', 15], ['jax', 36]].forEach(([id, x0]) => { const c = B[id].col, d = D[id] || {}; panel(x0 * T, 42.5 * T, 9 * T, 4.5 * T, c);
-    txt(id === 'jace' ? 'JACE // BRAIN: DOTS 3' : 'JAX // BRAIN: APODEX', x0 * T + 6, 43.5 * T, c, 8, '700 Orbitron');
-    txt(d.error ? 'starting monday' : `$${(d.equity || 1000).toFixed(2)} · ${((d.core || []).length)} lessons`, x0 * T + 6, 44.6 * T, '#eafcff', 10);
-    txt(`discussions held: ${(D.station.twins || {}).debates_held || 0}`, x0 * T + 6, 45.7 * T, a(c, .8), 9); });
-  // charging docks
-  BOTS.forEach(b => { const [dx, dy] = P['dock_' + b.id], c = b.col, x = dx * T + 8, y = dy * T + 8;
-    X.beginPath(); X.ellipse(x, y + 14, 18, 6, 0, 0, 7); X.fillStyle = a(c, .15); X.fill(); glow(c, 12); X.strokeStyle = a(c, .8); X.stroke();
-    X.beginPath(); X.ellipse(x, y + 14, 11, 3.5, 0, 0, 7); X.stroke(); noglow();
-    X.fillStyle = '#16233b'; X.fillRect(x - 24, y - 30, 6, 46); X.fillStyle = a(c, .7); X.fillRect(x - 23, y - 26, 4, 4);
-    if (!b.chg) txt('DOCK', x - 14, y + 30, a(c, .8), 8, '700 Orbitron'); });
+  ['console', 17.3, 4.8, 4.2, 2.2], ['dish', 39.7, 3.6, 3.0, 3.1, {color: '#ff9a3d'}],
+  deskBox('screen', 3), deskBox('screen2', 3), ['wallscreen', 18.2, 11.4, 2.6, 2, {color: '#ffb347', lines: 3}],
+  ['holotable', 27.6, 15.6, 4.8, 3.8], ['arcade', 17.4, 15.2, 1.5, 2.6, {color: '#ff3df2'}], ['vent', 41.8, 10.8, 1.2, 1.6],
+  ['console', 36.0, 12.4, 2.6, 1.6], ['console', 37.8, 20.6, 2.6, 1.6], ['console', 17.4, 23.2, 2.6, 1.6],
+  ['couch', 25.6, 22.0, 3.6, 1.3],
+  ['bin', 41.1, 15.5, 1.5, 1.4, {color: '#ff9a3d', id: 'tray'}],   // mail drop: the foundry's pipe delivers finished sites here
   // memory core
-  const mx = 55 * T, my = 20 * T; glow('#9d6bff', 22); X.beginPath(); X.moveTo(mx - 14, my); X.lineTo(mx, my - 30 + Math.sin(tick / 30) * 2); X.lineTo(mx + 14, my); X.lineTo(mx, my + 22); X.closePath();
-  X.fillStyle = 'rgba(157,107,255,.35)'; X.fill(); X.strokeStyle = '#c7a8ff'; X.stroke(); noglow();
-  const nc = Math.min(5, ((D.station.memory || {}).core || []).length || 3);
-  for (let i = 0; i < nc; i++) { const ly = 17 * T + i * 16 + Math.sin(tick / 25 + i) * 2; panel(45.5 * T, ly, 46, 12, '#9d6bff'); txt('CORE ' + (i + 1), 45.5 * T + 6, ly + 9, '#c7a8ff', 8); }
-  // briefing room: table + holo-board
-  const bx = 15 * T, by = 37.6 * T; X.beginPath(); X.ellipse(bx, by, 150, 18, 0, 0, 7); X.fillStyle = 'rgba(255,61,242,.10)'; X.fill(); glow('#ff3df2', 16); X.strokeStyle = 'rgba(255,61,242,.8)'; X.stroke(); noglow();
-  { const x0 = 1.5 * T, y0 = 28.3 * T, w = 27 * T, h = 3.9 * T; panel(x0, y0, w, h, '#ff3df2'); txt(boardTitle, x0 + 8, y0 + 12, '#ff3df2', 8, '700 Orbitron');
-    BOTS.forEach((b, k) => { const v = pct(b.id) || 0, bh = Math.min(30, Math.abs(v) * 1500) + 3, bxx = x0 + w - 106 + k * 20, base = y0 + h - 14;
-      X.fillStyle = a(b.col, .7); glow(b.col, 8); X.fillRect(bxx, base - bh, 12, bh); noglow(); txt((v >= 0 ? '+' : '') + (v * 100).toFixed(1), bxx - 3, base + 10, b.col, 8); });
-    X.fillStyle = 'rgba(255,61,242,.3)'; X.fillRect(x0 + w - 114, y0 + 8, 1, h - 16);
-    if (['briefing', 'debate'].includes(phase) && board.length) board.slice(-3).forEach(([who, l], i, arr) => { const y = y0 + 25 + i * 13;
-      txt(B[who].name + ':', x0 + 8, y, B[who].col, 10, '700 Orbitron'); X.save(); X.beginPath(); X.rect(x0 + 70, y - 11, w - 190, 14); X.clip();
-      txt(l, x0 + 76, y, i === arr.length - 1 ? '#ffffff' : '#9fb3cc', 11); X.restore(); });
-    else txt('— no briefing in progress —', x0 + 8, y0 + 38, '#6f5a7a', 10); }
-  // simulation chamber
-  X.strokeStyle = 'rgba(34,255,213,.10)';
-  for (let i = 0; i < 17; i++) for (let j = 0; j < 6; j++) { const hx = 31.5 * T + i * 28 + (j % 2) * 14, hy = 29.3 * T + j * 25; X.beginPath();
-    for (let k = 0; k < 6; k++) { const an = k * Math.PI / 3; X.lineTo(hx + 11 * Math.cos(an), hy + 11 * Math.sin(an)); } X.closePath(); X.stroke(); }
-  panel(46 * T, 29 * T, 12 * T, 8.5 * T, '#22ffd5'); txt('SIM // DATE HIDDEN', 46.6 * T, 30.2 * T, '#22ffd5', 9, '700 Orbitron');
-  txt(`PRACTICE DAYS DONE: ${D.station.practice.days_done || 0}`, 46.6 * T, 36.8 * T, a('#22ffd5', .8), 9); wave(46.6 * T, 33.5 * T, 10.8 * T, 14, '#22ffd5', tick / 40);
-  const dim = (i, al) => { const r = ROOMS[i]; X.fillStyle = `rgba(1,2,6,${al})`; X.fillRect(r.x * T + 1, r.y * T + 1, r.w * T - 1, r.h * T - 1); };
-  if (phase === 'weekend' || phase === 'practice' || phase === 'night') { dim(2, .45); if (phase !== 'debate') dim(5, .5); }
-  if (phase !== 'practice') dim(6, .55);
+  ['pillar', 52.3, 19.4, 1.4, 3.2, {color: '#9d6bff'}], ['console', 48.6, 19.4, 2.4, 1.8, {color: '#9d6bff'}], ['rack', 56.3, 23.4, 1.6, 2.6, {color: '#9d6bff'}],
+  ['vent', 57, 21.4, 1, 1.6, {color: '#9d6bff'}], ['cart', 52.4, 25.4, 2, 1.4, {color: '#9d6bff'}],
+  // briefing room: chairs facing the board, tables behind
+  ...['sp', 'ai', 'ch', 'jace', 'jax'].map(id => ['chair', P['seat_' + id][0] - .05, P['seat_' + id][1] - .2, 1.1, 1.5, {dir: 'n'}]),
+  ['table', 10.0, 37.4, 5, 1.3, {color: '#ff3df2'}], ['table', 17.6, 37.4, 5, 1.3, {color: '#ff3df2'}],
+  ['plant', 2.3, 32.3, 1.2, 1.9],
+  // simulation chamber: four practice pods
+  ...[[34.3, 1.4], [36.2, 1.4], [38.1, 1.4], [43.8, 1.6]].map(([x, w]) => ['pod', x, 30.4, w, 3, {color: '#22ffd5'}]),
+  ['console', 44.6, 37, 2.6, 1.7, {color: '#22ffd5'}], ['rack', 56.3, 35.6, 1.6, 2.6, {color: '#22ffd5'}], ['cart', 50, 37.4, 2, 1.4, {color: '#22ffd5'}],
+  // POD 06 // WEB SCOUT: the scraping desk between two server racks
+  deskBox('desk_sc', 3), ['rack', 24.2, 46.8, 1.4, 2.2, {color: '#ff9a3d'}],
+  // WEB FOUNDRY: press -> conveyor -> storage bins -> mail launch tube (walkway kept clear across the top)
+  ['press', 3, 56.4, 5.5, 4.9, {color: '#ff9a3d'}], ['conveyor', 8.4, 59.7, 29.6, 1.6, {color: '#ff9a3d'}],
+  ['bin', 38.4, 58.4, 3, 2.9, {color: '#ff9a3d'}], ['bin', 41.7, 58.4, 3, 2.9, {color: '#ff9a3d'}], ['bin', 45, 58.4, 3, 2.9, {color: '#ff9a3d'}],
+  ['tube', 53, 55.3, 2, 6.1, {color: '#ff9a3d'}], ['console', 49.4, 59.5, 2.6, 1.7, {color: '#ff9a3d'}],
+  ['locker', 56.2, 58.8, 1.5, 2.5, {color: '#ff9a3d'}], ['cart', 20.5, 57.6, 2, 1.3, {color: '#ff9a3d'}]];
+// Furniture is solid: the floor under the front part of each piece is not walkable. Doorways and the spots bots
+// walk to always stay open.
+const propBox = ([name, tx, ty, tw, th]) => { const k = name === 'engine' ? 1 : 1.3, w = tw * k, h = th * k; return [tx + tw / 2 - w / 2, ty + th - h, w, h]; };
+const MOUTHS = CORRIDORS.map(([x, y, w, h]) => ROOMS.some(r => r.y + r.h === y) && ROOMS.some(r => r.y === y + h) ? [x, y - 2, w, h + 5] : [x - 2, y, w + 4, h]);
+const inRect = (i, j, [x, y, w, h]) => i + .5 > x && i + .5 < x + w && j + .5 > y && j + .5 < y + h;
+PLACES.filter(p => !['wallscreen', 'chair'].includes(p[0])).forEach(p => { const [x, y, w, h] = propBox(p);
+  for (let j = Math.floor(y + h * .45); j < Math.ceil(y + h); j++) for (let i = Math.floor(x); i < Math.ceil(x + w); i++)
+    if (j >= 0 && j < H && i >= 0 && i < W && inRect(i, j, [x, y + h * .45, w, h * .55]) && !MOUTHS.some(m => inRect(i, j, m))) walk[j][i] = false; });
+Object.values(P).forEach(([x, y]) => { const i = Math.round(x), j = Math.round(y); if (walk[j]) walk[j][i] = true; });
+const PROP_SCALE_CHECK = () => PLACES.filter(p => !['wallscreen'].includes(p[0])).map(p => [p[0], p[1], p[2], propBox(p)])
+  .filter(([, , , b]) => MOUTHS.some(([x, y, w, h]) => b[0] < x + w && b[0] + b[2] > x && b[1] + b[3] * .45 < y + h && b[1] + b[3] > y));
+// The mail pipe: finished websites shoot from the foundry's launch tube, up the outside of the ship, into the command deck's tray.
+const PIPE = [[54, 53.6], [54, 53], [59.4, 53], [59.4, 15], [41.85, 15], [41.85, 15.3]].map(([x, y]) => [x * T, y * T]);
+const PIPE_LEN = PIPE.slice(1).reduce((s, q, i) => s + Math.hypot(q[0] - PIPE[i][0], q[1] - PIPE[i][1]), 0);
+function pipeAt(u) {                  // point at fraction u (0..1) along the pipe
+  let d = u * PIPE_LEN;
+  for (let i = 1; i < PIPE.length; i++) { const [ax, ay] = PIPE[i - 1], [bx, by] = PIPE[i], l = Math.hypot(bx - ax, by - ay);
+    if (d <= l) return [ax + (bx - ax) * d / l, ay + (by - ay) * d / l]; d -= l; }
+  return PIPE[PIPE.length - 1];
+}
+function drawPipe(g) {
+  for (let i = 1; i < PIPE.length; i++) { const [ax, ay] = PIPE[i - 1], [bx, by] = PIPE[i], x = Math.min(ax, bx), y = Math.min(ay, by), w = Math.abs(bx - ax), h = Math.abs(by - ay);
+    g.fillStyle = '#0a0d14'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+    g.fillStyle = '#16243a'; g.fillRect(x - 3, y - 3, w + 6, h + 6);                // glass
+    g.fillStyle = 'rgba(159,232,255,.35)'; ax === bx ? g.fillRect(x - 2, y - 3, 1, h + 6) : g.fillRect(x - 3, y - 2, w + 6, 1);   // shine
+    g.fillStyle = '#3e4a5d';                                                          // brackets every 24px
+    for (let k = 0; k <= (ax === bx ? h : w); k += 24) ax === bx ? g.fillRect(x - 5, y + k, 10, 2) : g.fillRect(x + k, y - 5, 2, 10); }
+}
+const MAIL = [];                      // cards in flight: {t0}
+function drawMail() {
+  for (let i = MAIL.length - 1; i >= 0; i--) { const u = (tick - MAIL[i].t0) / 300; if (u >= 1) { MAIL.splice(i, 1); continue; }
+    const [x, y] = pipeAt(u); glow('#ff9a3d', 8); StationMachines.card(X, Math.round(x - 6), Math.round(y - 5), 12, 9, {color: '#ff9a3d'}); noglow(); }
+}
+const ENGINES = [[4.5, 4], [14.5, 4], [27, 6], [41.5, 4], [51.5, 4]];   // [tile x, tiles wide] under the foundry
+const ANIM = new Set(['rack', 'console', 'wallscreen', 'holotable', 'arcade', 'vent', 'pillar', 'press', 'conveyor', 'tube', 'bin', 'dish']);
+const machineState = {}, PROP_SCALE = 1.3;                                   // e.g. {press: {active: true}} once the web bot is wired in
+function putProp(g, [name, tx, ty, tw, th, o = {}], t) {
+  const L = LIB(name); if (!L) return;
+  const k = name === 'engine' ? 1 : PROP_SCALE, w = tw * T * k, h = th * T * k, x = (tx + tw / 2) * T - w / 2, y = (ty + th) * T - h;   // grow from the bottom centre
+  L.draw(g, name, Math.round(x), Math.round(y), Math.round(w), Math.round(h), Object.assign({t}, o, machineState[o.id || name]));
+}
+// crew: our own little astronauts in each bot's color
+const near = (p, q) => q && Math.hypot(p[0] - q[0], p[1] - q[1]) < .15;
+function crewMode(b) {
+  if (b.path.length) return 'walk';
+  if (b.speak > 0 || (talk && talk.ready && (talk.a === b || talk.o === b))) return 'talk';
+  if (['briefing', 'debate'].includes(phase) && near(b.p, P['seat_' + b.id])) return 'sit';
+  if (near(b.p, P['desk_' + b.id])) return 'type';
+  return 'idle';
+}
+function drawCrew(b, x, y) {
+  if (!window.StationCrew) return false;
+  const mode = crewMode(b), dir = mode === 'sit' || mode === 'type' ? 'north' : b.chg && !b.path.length ? 'south' : b.face || 'south';
+  StationCrew.drawCrew(X, Math.round(x), Math.round(y + 15), {mode, dir, t: tick, color: b.col, size: 40});
+  return true;
+}
+
+// ===================== Scout: the website bot (runs on Barry's PC; the page only gets counts) =====================
+if (window.StationComms) Object.assign(StationComms.PALETTE, {dark: '#3a4558', mid: '#5a6880', light: '#8494ae', shine: '#c3d0e4'});   // brighter metal so the dish stands out on the dark wall
+const SCOUT = {id: 'sc', name: 'SCOUT', role: 'website bot · finds & builds sites', col: '#ff9a3d'};
+Object.assign(SCOUT, {p: P.dock_sc.slice(), path: [], dir: 1, walk: 0, say: null, sayT: 0, wait: 0, q: [], evq: [], chg: true, speak: 0, recent: [], carry: false});
+const FX = {press: 0, conveyor: 0, tube: 0, beam: 0, recv: 0, gold: 0};     // ticks left for each machine effect
+const scoutLog = [];                                                       // [time, kind, text] for Scout's chat box
+let webPrev = null, wakeT = 0, scoutSeenActive = false, wakeMsg = '';
+const web = () => (D && D.station && D.station.web) || null;
+const webAge = () => { const w = web(); return w ? (Date.now() - Date.parse(w.updated)) / 60e3 : Infinity; };   // minutes
+const scoutBusy = () => { const w = web(); return (w && w.active && webAge() < 75) || tick < wakeT; };
+const scoutDoing = () => { const w = web(); return w && w.active && webAge() < 75 ? w.doing : tick < wakeT ? 'starting' : 'idle'; };
+const plural = (n, s, p) => `${n} ${n === 1 ? s : (p || s + 's')}`;
+function scoutSay(text, kind = 'info') {
+  say(SCOUT, text, kind === 'good' ? 'g' : '');
+  const d = new Date(); scoutLog.push([d.toTimeString().slice(0, 8), kind === 'good' ? 'sell' : 'think', text]); if (scoutLog.length > 60) scoutLog.shift();
+  if (dlgBot === SCOUT) renderDlg();
+}
+function webData() {                     // new data arrived: turn changes in the counts into things Scout does
+  const w = web(); if (!w) return;
+  if (w.active) scoutSeenActive = true; else if (scoutSeenActive) { scoutSeenActive = false; wakeT = 0; }   // the round finished
+  StationWeb.webEvents(webPrev, w).forEach(e => SCOUT.evq.push(e)); webPrev = w;
+}
+function scoutAct(b, {kind, n}) {
+  if (kind === 'found') { goTo(b, 'desk_sc'); b.q.push(() => { scoutSay(`Found ${plural(n, 'new business', 'new businesses')} worth a look.`); b.wait = 200; }); }
+  if (kind === 'built') { goTo(b, 'press_sc'); b.q.push(() => { FX.press = FX.conveyor = 420; scoutSay(`Printing ${plural(n, 'sample site')}...`); b.wait = 330; });
+    b.q.push(() => { for (let i = 0; i < n; i++) MAIL.push({t0: tick + i * 45}); FX.tube = 120 + n * 45;
+      scoutSay(`${plural(n, 'site')} sent up the pipe to the command deck. Waiting for Barry.`, 'good'); b.wait = 200; }); }
+  if (kind === 'sent') { goTo(b, 'tray_sc'); b.q.push(() => { b.carry = true; scoutSay(`Barry hit Send: taking ${n === 1 ? 'one' : n} to the dish.`); b.wait = 60; goTo(b, 'dish_sc'); });
+    b.q.push(() => { b.carry = false; FX.beam = 360; scoutSay(`${plural(n, 'email')} beamed out!`, 'good'); b.wait = 300; }); }
+  if (kind === 'reply') { goTo(b, 'dish_sc'); b.q.push(() => { FX.recv = 400; scoutSay(`Incoming! ${n === 1 ? 'A business' : n + ' businesses'} wrote back.`, 'good'); b.speak = 200; b.wait = 360; }); }
+  if (kind === 'followup') { goTo(b, 'dish_sc'); b.q.push(() => { FX.gold = 300; scoutSay(`Follow-up with the sample link sent${n > 1 ? ` (${n})` : ''}.`, 'good'); b.wait = 300; }); }
+  if (kind === 'won') { goTo(b, 'holo_sc'); b.q.push(() => { FX.gold = 300; scoutSay('New customer! A gold star on the map.', 'good'); b.speak = 240; b.wait = 300; }); }
+}
+function scoutNext(b) {
+  if (b.q.length) { b.q.shift()(); return; }
+  if (b.evq.length) { scoutAct(b, b.evq.shift()); return; }
+  if (!scoutBusy()) { if (!b.chg) { scoutSay('All done. Back to the charger.'); charge(b); } return; }
+  const d = scoutDoing();
+  if (d === 'building') { goTo(b, 'press_sc'); b.q.push(() => { FX.press = FX.conveyor = 600; b.wait = 600; }); return; }
+  goTo(b, 'desk_sc'); b.q.push(() => { b.wait = 600; });                // searching / starting: at the scanner desk
+}
+function wakeScout() {
+  const w = web();
+  if (!w || !w.wake) { wakeMsg = "Scout isn't connected yet."; renderDlg(); return; }
+  if (scoutBusy()) { wakeMsg = 'Scout is already working.'; renderDlg(); return; }
+  wakeMsg = 'Waking Scout...'; renderDlg();
+  fetch('https://ntfy.sh/' + encodeURIComponent(w.wake), {method: 'POST', body: 'wake'}).then(r => {
+    if (!r.ok) throw new Error(r.status);
+    const s = StationWeb.summary(w); SCOUT.chg = false; SCOUT.speak = 120;
+    if (!s.building && s.waiting >= 20) {      // bot.py won't search or build while 20+ sites wait for Barry (LOW_WATER)
+      wakeT = tick + 60 * 60 * 2; wakeMsg = `Nothing to build: ${s.waiting} sites are waiting for you to send.`;
+      scoutSay(`Yawn... I checked: ${s.waiting} sites are already waiting for you. Send some and I'll make more. Back to my nap.`); return; }
+    wakeT = tick + 60 * 60 * 25; wakeMsg = 'Woken! A round is starting on your PC.';
+    scoutSay('Yawn... good morning! Starting a round: searching for businesses with bad websites.');
+  }).catch(() => { wakeMsg = "Couldn't reach the wake-up relay. Try again in a minute."; renderDlg(); });
+}
+function scoutFrame() {                  // machine effects count down every tick
+  for (const k in FX) if (FX[k] > 0) FX[k]--;
+  const s = StationWeb.summary(web());
+  Object.assign(machineState, {press: {active: FX.press > 0}, conveyor: {moving: FX.conveyor > 0}, tube: {launching: FX.tube > 0},
+    bin: {fill: Math.min(1, s.waiting / 30)}, tray: {fill: Math.min(1, s.waiting / 10)}, dish: {beaming: FX.beam > 0 || FX.gold > 0, receiving: FX.recv > 0}});
+}
+function drawStarMap() {
+  const w = web(), s = StationWeb.summary(w);
+  // the hologram: one star per business emailed (white), green when they replied, gold for customers
+  const gx = 30 * T, gy = 17.4 * T;
+  const stars = StationWeb.starMap(w, 120, 44), f = Math.sqrt(120 / Math.max(1, stars.length));   // spread a small list over the whole disc
+  stars.forEach(st => { st = {...st, x: st.x * f, y: st.y * f}; const tw = .6 + .4 * Math.sin(tick / 25 + st.i),
+      c = st.kind === 'gold' ? '#ffcf7a' : st.kind === 'green' ? '#3dffa2' : '#eafcff', z = st.kind === 'white' ? 2 : 3;
+    X.fillStyle = a(c, st.kind === 'white' ? .55 * tw + .2 : .9); X.fillRect(Math.round(gx + st.x - z / 2), Math.round(gy + st.y - z / 2), z, z);
+    if (st.kind === 'gold') { X.strokeStyle = a(c, .7); X.strokeRect(Math.round(gx + st.x) - 3.5, Math.round(gy + st.y) - 3.5, 7, 7); } });
+  if (w) txt(`LEADS // ${s.sent} SENT · ${s.replied} REPLIED`, gx - 46, gy - 30, a('#9fe8ff', .85), 6, '700 Orbitron');
+}
+function drawScoutWorld() {              // dish beams, the star map, the "awaiting Barry" sign and the foundry board
+  const w = web(), s = StationWeb.summary(w), ex = 41.2 * T, ey = 3.4 * T;
+  if (FX.beam > 0 || FX.gold > 0) { const c = FX.gold > 0 ? '#ffcf7a' : '#ffb347';
+    glow(c, 12); X.fillStyle = a(c, .35); X.fillRect(ex - 2, 0, 4, ey); for (let k = 0; k < 4; k++) { const y = ey - ((tick * 2 + k * 18) % ey); X.fillStyle = c; X.fillRect(ex - 3, y, 6, 6); } noglow(); }
+  if (FX.recv > 0) { glow('#3dffa2', 12); for (let k = 0; k < 3; k++) { const y = (tick * 2.5 + k * 22) % ey; X.fillStyle = a('#3dffa2', .9); X.fillRect(ex - 2, y, 4, 8); } noglow(); }
+  // the mail tray: what's waiting for Barry to press Send
+  panel(36.6 * T, 13.6 * T, 6.2 * T, 1.2 * T, '#ff9a3d'); txt(`${s.waiting} AWAITING BARRY`, 36.85 * T, 14.4 * T, s.waiting ? '#ffcf7a' : '#7a5a86', 6, '700 Orbitron');
+  // foundry wall board
+  panel(14 * T, 52.85 * T, 12.5 * T, 1.9 * T, '#ff9a3d'); const d = scoutBusy() ? scoutDoing().toUpperCase() : webAge() > 180 ? 'PC OFFLINE?' : 'CHARGING';
+  txt(`SCOUT // ${d}`, 14.4 * T, 52.85 * T + 10, '#ff9a3d', 7, '700 Orbitron');
+  txt(`TO BUILD ${s.building} · READY ${s.waiting} · SENT ${s.sent} · REPLIED ${s.replied}`, 14.4 * T, 52.85 * T + 23, '#eafcff', 8);
+  if (scoutBusy() && scoutDoing() !== 'building') { const x0 = 28.6 * T, y0 = 43.6 * T; txt('SCANNING' + '.'.repeat((tick / 20 | 0) % 4), x0, y0, '#ff9a3d', 6, '700 Orbitron'); }
+}
+
+// Space (scrolling, behind everything) and the rooms (drawn once onto a see-through layer).
+let hullLayer = null, spaceLayer = null;
+const STARS = StationArt.makeStars(260, MW, MH, 7).map(st => Object.assign(st, {v: .25 + st.r * .55}));
+function buildSpace() {               // nebula painted once, mirrored below itself so it scrolls without a seam
+  const L = document.createElement('canvas'); L.width = MW; L.height = 2 * MH; const g = L.getContext('2d');
+  g.fillStyle = '#020108'; g.fillRect(0, 0, MW, MH); g.globalAlpha = .38; StationArt.drawSpace(g, MW, MH, 0, []); g.globalAlpha = 1;
+  g.save(); g.translate(0, 2 * MH); g.scale(1, -1); g.drawImage(L, 0, 0, MW, MH, 0, 0, MW, MH); g.restore();
+  spaceLayer = L;
+}
+function doorway(g, x, y, w, c) {     // an open sliding door in a room's back wall: frame, dark passage, door leaves pulled aside
+  const top = y + 12, h = WALL_ROWS * T - 12;
+  g.fillStyle = '#0a0d14'; g.fillRect(x - 4, top - 4, w + 8, h + 4);
+  g.fillStyle = '#4a5568'; g.fillRect(x - 3, top - 3, w + 6, 2); g.fillRect(x - 3, top - 3, 2, h + 3); g.fillRect(x + w + 1, top - 3, 2, h + 3);
+  floorFill(g, 'corridor', x, top, w, h, c);
+  for (let k = 0; k < h; k++) { g.fillStyle = `rgba(0,0,0,${.75 * (1 - k / h)})`; g.fillRect(x, top + k, w, 1); }   // passage fades into the dark
+  g.fillStyle = '#2a3342'; g.fillRect(x, top, 5, h); g.fillRect(x + w - 5, top, 5, h);
+  g.fillStyle = '#3e4a5d'; g.fillRect(x, top, 1, h); g.fillRect(x + w - 1, top, 1, h);
+  g.fillStyle = c; g.fillRect(x + 2, top + 4, 1, h - 8); g.fillRect(x + w - 3, top + 4, 1, h - 8);
+  g.fillStyle = '#ffb347'; g.fillRect(x + w / 2 - 3, top - 7, 6, 2);           // amber lamp over the door
+}
+function stripe(g, sx, sy, sw, sh) {   // yellow/black hazard stripes
+  g.save(); g.beginPath(); g.rect(sx, sy, sw, sh); g.clip(); g.fillStyle = '#1a1a1a'; g.fillRect(sx, sy, sw, sh); g.fillStyle = '#c9971f';
+  for (let k = -sh; k < sw + sh; k += 6) { g.beginPath(); g.moveTo(sx + k, sy + sh); g.lineTo(sx + k + 3, sy + sh); g.lineTo(sx + k + 3 + sh, sy); g.lineTo(sx + k + sh, sy); g.fill(); } g.restore();
+}
+function buildHulls() {
+  const L = document.createElement('canvas'); L.width = 2 * MW; L.height = 2 * MH; const g = L.getContext('2d'); g.scale(2, 2);
+  const B = 8;                                                // wall thickness (map px)
+  // engine pylons first, so the foundry's hull sits on top of them
+  ENGINES.forEach(([ex, ew]) => { g.fillStyle = '#07080b'; g.fillRect((ex - .2) * T, 62 * T, (ew + .4) * T, 1.9 * T);
+    StationWalls.drawSideWall(g, (ex - .2) * T, 63 * T + B, (ew + .4) * T, .8 * T, 's'); });
+  ROOMS.forEach((r, n) => { const x = r.x * T, y = r.y * T, w = r.w * T, h = r.h * T, wh = WALL_ROWS * T;
+    g.fillStyle = '#07080b'; g.fillRect(x - B - 2, y - 2, w + 2 * B + 4, h + B + 4);               // dark hull behind the room
+    floorFill(g, r.k, x, y + wh, w, h - wh, r.c);
+    StationWalls.drawLightPool(g, x + w / 2, y + wh + (h - wh) * .45, Math.max(w, h) * .55, '#ffb347', .09);
+    StationWalls.drawLightPool(g, x + w / 2, y + wh + 4, w * .4, r.c, .07);
+    StationWalls.drawNorthWall(g, x, y, w, wh, {seed: n + 1});
+    g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x, y + wh, w, 4);                                   // the wall's shadow on the floor
+    StationWalls.drawSideWall(g, x - B, y, B, h, 'w'); StationWalls.drawSideWall(g, x + w, y, B, h, 'e');
+    StationWalls.drawSideWall(g, x - B, y + h, w + 2 * B, B, 's'); });
+  drawPipe(g);
+  CORRIDORS.forEach(([x, y, w, h]) => {
+    const X0 = x * T, Y0 = y * T, W0 = w * T, H0 = h * T;
+    if (ROOMS.some(r => r.y + r.h === y) && ROOMS.some(r => r.y === y + h)) {   // up/down hallway: walls both sides, floor from the room above's door gap to the room below's doorway
+      g.fillStyle = '#07080b'; g.fillRect(X0 - B, Y0, W0 + 2 * B, H0);
+      floorFill(g, 'corridor', X0, Y0 - B, W0, H0 + B, '#22e4ff');
+      StationWalls.drawSideWall(g, X0 - B, Y0 - B, B, H0 + B, 'w'); StationWalls.drawSideWall(g, X0 + W0, Y0 - B, B, H0 + B, 'e');
+      stripe(g, X0, Y0 - B, W0, 3);
+      for (let k = Y0 + 6; k < Y0 + H0; k += 12) { g.fillStyle = 'rgba(255,179,71,.55)'; g.fillRect(X0 + W0 / 2 - 1, k, 2, 2); }   // runway lights
+      const below = ROOMS.find(r => r.y === y + h && x >= r.x && x + w <= r.x + r.w);
+      if (below) doorway(g, X0, below.y * T, W0, below.c);
+    } else {                     // side-to-side hallway: short wall face on top, wall band below, door frames at both ends
+      g.fillStyle = '#07080b'; g.fillRect(X0 - B, Y0 - 10, W0 + 2 * B, H0 + B + 10);
+      floorFill(g, 'corridor', X0 - B, Y0, W0 + 2 * B, H0, '#22e4ff');
+      StationWalls.drawNorthWall(g, X0, Y0 - 10, W0, 10, {lights: 0});
+      StationWalls.drawSideWall(g, X0, Y0 + H0, W0, B, 's');
+      g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(X0 - B, Y0, W0 + 2 * B, 3);
+      [X0 - B, X0 + W0 + B - 3].forEach(px => { g.fillStyle = '#0a0d14'; g.fillRect(px - 1, Y0 - 12, 5, H0 + 12);
+        g.fillStyle = '#4a5568'; g.fillRect(px, Y0 - 11, 3, H0 + 10); g.fillStyle = '#ffb347'; g.fillRect(px, Y0 - 13, 3, 2); });
+      stripe(g, X0 - B + 4, Y0, 3, H0); stripe(g, X0 + W0 + B - 7, Y0, 3, H0);
+    } });
+  PLACES.filter(p => !ANIM.has(p[0])).forEach(p => putProp(g, p, 0));
+  [...BOTS, SCOUT].forEach(b => { const [dx, dy] = P['dock_' + b.id], x = Math.round(dx * T - 6), y = Math.round(dy * T + 12);   // charging pads
+    g.fillStyle = '#0a0d14'; g.fillRect(x - 1, y - 1, 30, 18); g.fillStyle = '#2a3342'; g.fillRect(x, y, 28, 16); stripe(g, x + 2, y + 2, 24, 12);
+    g.fillStyle = '#1a202b'; g.fillRect(x + 6, y + 4, 16, 8); g.fillStyle = b.col; g.fillRect(x + 8, y + 7, 12, 2); });
+  hullLayer = L;
+}
+function drawSpace() {                // the ship flies "up": nebula and stars stream down past it
+  if (!spaceLayer) buildSpace();
+  const off = (tick * .12) % (2 * MH);
+  X.drawImage(spaceLayer, 0, off - 2 * MH); X.drawImage(spaceLayer, 0, off);
+  STARS.forEach(st => { const y = (st.y + tick * st.v) % MH, z = st.r > 1.2 ? 2 : 1;
+    X.fillStyle = StationArt.hexA('#ffffff', st.a * (.6 + .4 * Math.sin(tick / 40 + st.tw))); X.fillRect(Math.round(st.x), Math.round(y), z, z);
+    if (st.v > .85) { X.fillStyle = StationArt.hexA('#9fd8ff', st.a * .25); X.fillRect(Math.round(st.x), Math.round(y) - 7, 1, 7); } });   // speed streaks
+}
+function drawEngines() {
+  ENGINES.forEach(([ex, ew], k) => putProp(X, ['engine', ex, 63.6, ew, 7.6, {color: '#7fd4ff'}], tick + k * 5));
+}
+function drawMap() {
+  if (!hullLayer) buildHulls();
+  drawSpace(); drawEngines();
+  X.drawImage(hullLayer, 0, 0, MW, MH);
+  PLACES.filter(p => ANIM.has(p[0])).forEach(p => putProp(X, p, tick));
+  if (window.StationMachines) drawMail();
+  if (window.StationWeb) drawScoutWorld();
+  ROOMS.forEach(r => { X.font = '700 8px Orbitron'; const lw = X.measureText(r.l).width, lx = r.x * T + 6, ly = r.y * T + 3;   // name plates, on top of wall screens
+    X.fillStyle = 'rgba(5,6,9,.9)'; X.fillRect(lx, ly, lw + 10, 12); X.fillStyle = a(r.c, .9); X.fillRect(lx, ly + 11, lw + 10, 1);
+    X.fillStyle = r.c; X.fillText(r.l, lx + 5, ly + 9); });
+  // ticker along the top (real numbers)
+  X.save(); X.beginPath(); X.rect(0, 0, 960, 1.6 * T); X.clip(); X.fillStyle = 'rgba(5,3,15,.85)'; X.fillRect(0, 0, 960, 1.6 * T);
+  if (tape.length) { X.font = '700 12px Orbitron'; const gap = '      ', tw = tape.reduce((s, [t]) => s + X.measureText(t + gap).width, 0), off = -(tick * .9 % tw);
+    for (let k = 0; k < Math.ceil(960 / tw) + 1; k++) { let x = off + k * tw; tape.forEach(([t, v]) => { X.fillStyle = v < 0 ? '#ff4d6d' : v > 0 ? '#3dffa2' : '#22e4ff'; X.fillText(t, x, 18); x += X.measureText(t + gap).width; }); } }
+  X.restore();
+  // command deck: the market wall screen and the hologram over the tactical table
+  const L = D.live || {}, spyPts = (L.history || []).map(h => h.spy).filter(Boolean);
+  panel(27 * T, 3.35 * T, 11.6 * T, 2.4 * T, '#3dffa2');
+  txt(`SPY ${L.spy ? L.spy.toFixed(2) : ''}  //  ${L.mode || ''}`, 27.5 * T, 4.1 * T, '#3dffa2', 8, '700 Orbitron');
+  X.lineWidth = 1.5; wave(27.5 * T, 5 * T, 10.6 * T, 7, '#3dffa2', tick / 60, spyPts.length > 2 ? spyPts : null); X.lineWidth = 1;
+  const gx = 30 * T, gy = 17.2 * T; glow('#3fd9ff', 10); X.strokeStyle = 'rgba(63,217,255,.55)';
+  if (window.StationWeb && web()) { X.beginPath(); X.ellipse(gx, gy + 14, 36, 7, 0, 0, 7); X.strokeStyle = 'rgba(63,217,255,.35)'; X.stroke(); noglow(); drawStarMap(); }
+  else { X.beginPath(); X.arc(gx, gy, 20, 0, 7); X.stroke();
+  for (let k = 0; k < 3; k++) { X.beginPath(); X.ellipse(gx, gy, Math.abs(20 * Math.cos(tick / 50 + k)), 20, 0, 0, 7); X.strokeStyle = 'rgba(63,217,255,.25)'; X.stroke(); }
+  X.beginPath(); X.ellipse(gx, gy, 30, 6, tick / 90, 0, 7); X.strokeStyle = 'rgba(255,179,71,.45)'; X.stroke(); noglow(); }
+  // news on the deck TV: scrolling amber lines
+  for (let i = 0; i < 3; i++) { X.fillStyle = 'rgba(255,179,71,.55)'; X.fillRect(18.55 * T, 12.15 * T + i * 4, (1.2 + ((i + tick / 40 | 0) % 3) * .5) * T, 2); }
+  // the twins' account screens on their back walls
+  [['jace', 11.2], ['jax', 48.9]].forEach(([id, x0]) => { const c = B[id].col, d = D[id] || {}; panel(x0 * T, 41.3 * T, 8.8 * T, 2.4 * T, c);
+    txt(id === 'jace' ? 'JACE // BRAIN: DOTS 3' : 'JAX // BRAIN: APODEX', x0 * T + 5, 41.3 * T + 10, c, 7, '700 Orbitron');
+    txt(d.error ? 'starting monday' : `$${(d.equity || 1000).toFixed(2)} · ${((d.core || []).length)} lessons`, x0 * T + 5, 41.3 * T + 21, '#eafcff', 9);
+    txt(`discussions held: ${(D.station.twins || {}).debates_held || 0}`, x0 * T + 5, 41.3 * T + 32, a(c, .8), 8); });
+  // charging pads: a soft glow under the hazard pad
+  BOTS.forEach(b => { const [dx, dy] = P['dock_' + b.id], x = dx * T + 8, y = dy * T + 22;
+    X.beginPath(); X.ellipse(x, y, 13, 4, 0, 0, 7); X.fillStyle = a(b.col, b.chg ? .22 + .1 * Math.sin(tick / 12) : .08); X.fill(); });
+  // nameplates over each bot's desk (lit while the bot is on duty)
+  BOTS.filter(b => !twin(b.id)).forEach(b => { const [dx, dy] = P['desk_' + b.id], x = dx * T + 8, y = dy * T - 34; X.font = '700 7px Orbitron';
+    const w = X.measureText(b.name).width + 10; rr(x - w / 2, y, w, 10, 2); X.fillStyle = '#05070b'; X.fill(); X.strokeStyle = a(b.col, .5); X.stroke();
+    if (!b.chg) glow(b.col, 6); txt(b.name, x - w / 2 + 5, y + 8, b.chg ? a(b.col, .45) : b.col, 7, '700 Orbitron'); noglow(); });
+  // memory core: crystal floating over the core lens, lesson slots on the wall
+  const mx = 53 * T, my = 18.6 * T + Math.sin(tick / 30) * 2; glow('#9d6bff', 14); X.beginPath(); X.moveTo(mx - 8, my); X.lineTo(mx, my - 16); X.lineTo(mx + 8, my); X.lineTo(mx, my + 12); X.closePath();
+  X.fillStyle = 'rgba(157,107,255,.4)'; X.fill(); X.strokeStyle = '#c7a8ff'; X.stroke(); noglow();
+  const nc = Math.min(4, ((D.station.memory || {}).core || []).length || 3);
+  panel(46.5 * T, 17.1 * T, 5.6 * T, 1.85 * T, '#9d6bff');
+  for (let i = 0; i < nc; i++) { const lx = 46.9 * T + i * 20, on = (tick / 40 | 0) % nc === i; X.fillStyle = on ? '#c7a8ff' : a('#9d6bff', .45); X.fillRect(lx, 18.2 * T, 14, 5); }
+  txt('CORE LESSONS', 46.9 * T, 17.85 * T, '#c7a8ff', 6, '700 Orbitron');
+  // briefing room: the board on the back wall
+  { const x0 = 13.6 * T, y0 = 29.35 * T, w = 14 * T, h = 2.45 * T, live = ['briefing', 'debate'].includes(phase) && board.length; panel(x0, y0, w, h, '#ff3df2'); txt(boardTitle, x0 + 6, y0 + 9, '#ff7df6', 7, '700 Orbitron');
+    if (!live) BOTS.forEach((b, k) => { const v = pct(b.id) || 0, bh = Math.min(16, Math.abs(v) * 900) + 2, bxx = x0 + w - 88 + k * 16, base = y0 + h - 9;
+      X.fillStyle = a(b.col, .75); X.fillRect(bxx, base - bh, 9, bh); txt((v >= 0 ? '+' : '') + (v * 100).toFixed(1), bxx - 2, base + 7, b.col, 6); });
+    if (['briefing', 'debate'].includes(phase) && board.length) board.slice(-2).forEach(([who, l], i, arr) => { const y = y0 + 20 + i * 10;
+      txt(B[who].name + ':', x0 + 6, y, B[who].col, 7, '700 Orbitron'); X.save(); X.beginPath(); X.rect(x0 + 48, y - 8, w - 54, 10); X.clip();
+      txt(l, x0 + 50, y, i === arr.length - 1 ? '#ffffff' : '#9fb3cc', 8); X.restore(); });
+    else txt('— no briefing in progress —', x0 + 6, y0 + 26, '#7a5a86', 8); }
+  // simulation chamber: status screen on its back wall
+  panel(50.8 * T, 29.35 * T, 6.9 * T, 2.45 * T, '#22ffd5'); txt('SIM // DATE HIDDEN', 51.2 * T, 29.35 * T + 9, '#22ffd5', 7, '700 Orbitron');
+  txt(`PRACTICE DAYS DONE: ${D.station.practice.days_done || 0}`, 51.2 * T, 29.35 * T + 33, a('#22ffd5', .8), 7); wave(51.2 * T, 29.35 * T + 21, 6.1 * T, 5, '#22ffd5', tick / 40);
+  const dim = (k, al) => { const r = room(k); X.fillStyle = `rgba(1,2,6,${al})`; X.fillRect(r.x * T, r.y * T, r.w * T, r.h * T); };
+  if (phase === 'weekend' || phase === 'practice' || phase === 'night') { dim('deck', .4); if (phase !== 'debate') dim('brief', .45); }
+  if (phase !== 'practice') dim('sim', .45);
 }
 function countdown() {
   const m = D.station.market, now = Date.now(), open = Date.parse(m.next_open), lc = Date.parse(m.last_close);
@@ -459,6 +770,7 @@ function drawBot(b) {
   const x = b.p[0] * T + 8, y = b.p[1] * T + 8, c = b.col, mv = b.path.length > 0, lg = mv ? Math.sin(b.walk) * 4 : 0, bob = mv ? Math.abs(Math.sin(b.walk)) * -2 : Math.sin(tick / 20 + x) * .8;
   X.beginPath(); X.ellipse(x, y + 15, 11, 3.5, 0, 0, 7); X.fillStyle = a(c, .3); X.fill();
   if (following === b) { X.beginPath(); X.ellipse(x, y + 15, 20, 7, 0, 0, 7); X.strokeStyle = '#fff'; X.setLineDash([3, 3]); X.stroke(); X.setLineDash([]); }
+  if (!drawCrew(b, x, y)) {
   X.fillStyle = '#1a2740'; X.fillRect(x - 6 + lg * .5, y + 4, 4, 10); X.fillRect(x + 2 - lg * .5, y + 4, 4, 10);
   X.fillStyle = c; X.fillRect(x - 6 + lg * .5, y + 12, 4, 2); X.fillRect(x + 2 - lg * .5, y + 12, 4, 2);
   rr(x - 8, y - 9 + bob, 16, 15, 4); X.fillStyle = '#d9e6f5'; X.fill(); X.fillStyle = '#9fb3cc'; X.fillRect(x - 8, y + 2 + bob, 16, 4);
@@ -468,8 +780,11 @@ function drawBot(b) {
   glow(c, 10); X.fillStyle = c; const ex = b.dir > 0 ? 1 : -1, bl = (tick + x) % 140 < 5;
   X.fillRect(x - 4 + ex, y - 18 + bob, 3, bl ? 1 : 2); X.fillRect(x + 1 + ex, y - 18 + bob, 3, bl ? 1 : 2);
   X.fillRect(x - 1, y - 29 + bob, 2, 5); X.beginPath(); X.arc(x, y - 30 + bob, 2.2, 0, 7); X.fill(); noglow();
+  }
   const docked = b.chg && !mv;
-  if (docked) { const [pc, left] = countdown(), up = (tick * 1.5) % 30;
+  if (docked && b === SCOUT) { const z = (tick / 40 | 0) % 3; txt('z'.repeat(z + 1), x + 10, y - 30 - z * 3, a(c, .8), 9, '700 Orbitron');
+    txt('TAP TO WAKE', x - 36, y - 40, a(c, .75), 7, '700 Orbitron'); }
+  else if (docked) { const [pc, left] = countdown(), up = (tick * 1.5) % 30;
     X.fillStyle = a(c, .12 + .08 * Math.sin(tick / 10)); X.fillRect(x - 12, y - 34, 24, 48);
     for (let k = 0; k < 3; k++) { const yy = y + 12 - ((up + k * 10) % 30) * 1.5; X.fillStyle = a(c, .6); X.fillRect(x - 10 + k * 9, yy, 2, 5); }
     const bx = x - 44, by = y - 58; rr(bx, by, 88, 28, 5); X.fillStyle = 'rgba(5,12,26,.94)'; X.fill(); X.strokeStyle = a(c, .8); X.stroke();
@@ -487,23 +802,50 @@ function drawBot(b) {
 function step() {
   tick++; runReplay(); runTalk(); runMeet();
   floaters.forEach(f => f.t++); while (floaters.length && floaters[0].t > 120) floaters.shift();
-  BOTS.forEach(b => { if (b.sayT > 0) b.sayT--; if (b.speak > 0) b.speak--;
+  if (window.StationWeb) scoutFrame();
+  [...BOTS, SCOUT].forEach(b => { if (b.sayT > 0) b.sayT--; if (b.speak > 0) b.speak--;
     if (b.path.length) { const t = b.path[0], dx = t[0] - b.p[0], dy = t[1] - b.p[1], d = Math.hypot(dx, dy), s = mode === 'replay' ? .16 : .085;
-      if (dx) b.dir = Math.sign(dx); b.walk += .35; if (d < s) { b.p = [t[0], t[1]]; b.path.shift(); } else { b.p[0] += dx / d * s; b.p[1] += dy / d * s; } return; }
-    if (b.wait > 0) { b.wait--; return; } next(b); });
+      if (dx) b.dir = Math.sign(dx); b.face = window.StationSprites ? StationSprites.dirFromVector(dx, dy, b.face) : b.face; b.walk += .35; if (d < s) { b.p = [t[0], t[1]]; b.path.shift(); } else { b.p[0] += dx / d * s; b.p[1] += dy / d * s; } return; }
+    if (b.wait > 0) { b.wait--; return; } b === SCOUT ? scoutNext(b) : next(b); });
 }
 function draw() {
-  drawMap(); [...BOTS].sort((p, q) => p.p[1] - q.p[1]).forEach(drawBot);
+  X.setTransform(2, 0, 0, 2, 0, 0); X.imageSmoothingEnabled = false;
+  drawMap(); [...BOTS, SCOUT].sort((p, q) => p.p[1] - q.p[1]).forEach(drawBot);
   floaters.forEach(f => { glow(f.c, 10); txt(f.s, f.x - 14, f.y - f.t * .4, a(f.c, 1 - f.t / 120), 13, '700 Orbitron'); noglow(); });
 }
 let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(1000, now - last); last = now; while (acc >= 1000 / 60) { step(); acc -= 1000 / 60; } draw(); requestAnimationFrame(loop); }
 
-// ===================== follow a bot =====================
-C.onclick = e => { const r = C.getBoundingClientRect(), mx = (e.clientX - r.left) * 960 / r.width, my = (e.clientY - r.top) * 800 / r.height;
-  const hit = BOTS.find(b => Math.hypot(b.p[0] * T + 8 - mx, b.p[1] * T - 2 - my) < 24); following = hit && hit !== following ? hit : null; showFollow(); };
+// ===================== tap a bot: follow it and open its chat =====================
+C.onclick = e => { const r = C.getBoundingClientRect(), mx = (e.clientX - r.left) * 960 / r.width, my = (e.clientY - r.top) * MH / r.height;
+  const hit = [...BOTS, SCOUT].find(b => Math.hypot(b.p[0] * T + 8 - mx, b.p[1] * T - 2 - my) < 24);
+  following = hit && hit !== following ? hit : null; showFollow(); following ? openDlg(following) : closeDlg(); };
+let dlgBot = null;
+function chatFor(b) {
+  if (b === SCOUT) return {title: 'SCOUT LOG', ev: scoutLog};
+  const tw = (D.station.twins || {})[b.id] || {};
+  if (phase === 'practice' && practicing(b.id)) return {title: 'PRACTICE CHAT', ev: b.id === 'ch' ? D.station.practice.events || [] : tw.practice || []};
+  return {title: 'TRADING CHAT', ev: evOf(b.id)};
+}
+function renderDlg() {
+  const el = $("dlg"); if (!dlgBot || !D) return;
+  const body = el.querySelector('.dlg-body'), atEnd = !body || body.scrollHeight - body.scrollTop - body.clientHeight < 30;
+  const {title, ev} = chatFor(dlgBot);
+  el.innerHTML = StationDialog.dialogHtml(dlgBot, StationChat.chatLines(ev, {skip: ['scan', 'talk', 'decision']}), {title});
+  el.querySelector('.dlg-x').onclick = () => { following = null; showFollow(); closeDlg(); };
+  if (dlgBot === SCOUT) { const busy = scoutBusy(), bar = document.createElement('div'); bar.className = 'dlg-wake';
+    bar.innerHTML = `<button ${busy ? 'disabled' : ''}>${busy ? 'WORKING: ' + esc(scoutDoing().toUpperCase()) : '⚡ WAKE UP'}</button><span>${esc(wakeMsg || (busy ? 'Scout is on a round.' : 'Starts one round on your PC: search, check, build. Never sends email.'))}</span>`;
+    bar.querySelector('button').onclick = wakeScout; el.querySelector('.dlg').insertBefore(bar, el.querySelector('.dlg-body')); }
+  const nb = el.querySelector('.dlg-body'); if (atEnd) nb.scrollTop = nb.scrollHeight; else if (body) nb.scrollTop = body.scrollTop;
+}
+function openDlg(b) { dlgBot = b; $("dlg").innerHTML = ''; $("dlg").classList.remove('hidden'); renderDlg(); }
+function closeDlg() { dlgBot = null; $("dlg").classList.add('hidden'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && dlgBot) { following = null; showFollow(); closeDlg(); } });
 function showFollow() {
   const el = $("follow"); if (!following) { el.classList.add('hidden'); return; } el.classList.remove('hidden'); const b = following;
+  if (b === SCOUT) { const s = StationWeb.summary(web()), row = (k, v) => `<div class="row"><span class="k">${k}</span><span>${v}</span></div>`;
+    el.innerHTML = `<h2 style="color:${b.col}">FOLLOWING // SCOUT</h2><div class="note">${b.role}</div>` + row('Now', scoutBusy() ? scoutDoing() : 'charging') +
+      row('To build', s.building) + row('Awaiting Barry', s.waiting) + row('Sent', s.sent) + row('Replied', s.replied); return; }
   let pos = [];
   if (b.id === 'sp') pos = (D.live.positions || []).map(p => `${p.sym} · $${p.value.toFixed(2)}`);
   if (b.id === 'ai') pos = D.ai.hold ? [`${D.ai.hold.sym} · ${D.ai.hold.qty} shares @ $${D.ai.hold.entry}`] : [];
@@ -516,7 +858,7 @@ function showFollow() {
 }
 
 // ===================== wiring =====================
-function setData(d) { D = d; if (d.station && !d.station.error) { units(); buildTape(); feedLive(); if (following) showFollow(); } }
+function setData(d) { D = d; if (d.station && !d.station.error) { if (window.StationWeb) webData(); units(); buildTape(); feedLive(); if (following) showFollow(); if (dlgBot) renderDlg(); } }
 function start(d) {
   $("lock").classList.add('hidden'); $("app").classList.remove('hidden');
   if (!d.station || d.station.error) { $("status").textContent = 'STATION DATA NOT READY YET'; return; }

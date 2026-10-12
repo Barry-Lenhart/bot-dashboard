@@ -583,10 +583,7 @@ function wakeScout() {
   wakeMsg = 'Waking Scout...'; renderDlg();
   fetch('https://ntfy.sh/' + encodeURIComponent(w.wake), {method: 'POST', body: 'wake'}).then(r => {
     if (!r.ok) throw new Error(r.status);
-    const s = StationWeb.summary(w); SCOUT.chg = false; SCOUT.speak = 120;
-    if (!s.building && s.waiting >= 20) {      // bot.py won't search or build while 20+ sites wait for Barry (LOW_WATER)
-      wakeT = tick + 60 * 60 * 2; wakeMsg = `Nothing to build: ${s.waiting} sites are waiting for you to send.`;
-      scoutSay(`Yawn... I checked: ${s.waiting} sites are already waiting for you. Send some and I'll make more. Back to my nap.`); return; }
+    SCOUT.chg = false; SCOUT.speak = 120;
     wakeT = tick + 60 * 60 * 25; wakeMsg = 'Woken! A round is starting on your PC.';
     scoutSay('Yawn... good morning! Starting a round: searching for businesses with bad websites.');
   }).catch(() => { wakeMsg = "Couldn't reach the wake-up relay. Try again in a minute."; renderDlg(); });

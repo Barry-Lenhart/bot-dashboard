@@ -222,10 +222,9 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
         <div id="c-plans"></div>
       </div>
       <div><h3>Paper account value</h3><div style="height:8px"></div><div class="chartbox"><canvas id="c-chart"></canvas></div></div>
-      <div>
-        <h3>Trades</h3><div style="height:6px"></div>
+      <details><summary>Trades <span id="c-tcount" class="mono"></span></summary><div style="height:8px"></div>
         <div class="tablewrap"><table><thead><tr><th>Day</th><th>Stock</th><th>Shares</th><th>Held</th><th>Result</th></tr></thead><tbody id="c-trades"></tbody></table></div>
-      </div>
+      </details>
       <div class="sub" id="c-practice"></div>
       <details open><summary>Its lessons for tomorrow</summary><div style="height:8px"></div><div class="lessons" id="c-lessons"></div></details>
       <details open><summary>🧰 Its wishlist — what it says would help it</summary><div style="height:8px"></div><div class="lessons" id="c-wish"></div></details>
@@ -419,6 +418,7 @@ function renderChat(C, p = "c", who = "the chatbot") {
   lineChart(p + "-chart", ["start", ...h.map(x => x.d.slice(5))], [{label: C.model ? who + " paper account" : "Chatbot paper account",
     data: [C.start_equity, ...h.map(x => x.eq)], color: "#5aa9ff", fill: "rgba(90,169,255,.1)"}]);
   const tt = $("c-trades"); tt.textContent = "";
+  $("c-tcount").textContent = C.trades.length ? `· ${C.trades.length} shown` : "";
   if (!C.trades.length) emptyRow(tt, 5, "No trades yet.");
   for (const t of C.trades.slice().reverse()) {
     const tr = document.createElement("tr");

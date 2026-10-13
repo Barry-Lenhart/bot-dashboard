@@ -162,8 +162,9 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
       <select id="view" aria-label="Choose which account to look at">
         <option value="all">📊 All accounts</option>
         <option value="live">💵 S&amp;P Bot (real money)</option>
-        <option value="ai">🤖 AI Day Trader (paper)</option>
-        <option value="chat">🧠 Chatbot Trader (paper)</option>
+        <option value="chat">🧠 Chad, the Chatbot Trader (paper)</option>
+        <option value="jace">👯 Jace, twin (paper)</option>
+        <option value="jax">👯 Jax, twin (paper)</option>
       </select>
     </label>
     <a class="btn" href="station.html" style="text-decoration:none">🛰️ Bot Station</a>
@@ -201,37 +202,9 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
       <details open><summary>Recent activity</summary><div style="height:8px"></div><div class="feed" id="l-feed"></div></details>
     </section>
 
-    <!-- AI PAPER BOT -->
-    <section class="panel ai" data-view="ai">
-      <div class="ph"><h2>AI Day Trader</h2><span class="tag paper">🤖 PAPER</span><div class="spacer"></div><span id="a-status" class="pill">—</span></div>
-      <div id="a-err" class="err hidden"></div>
-      <div>
-        <div class="big mono" id="a-eq">—</div>
-        <div class="sub" id="a-sub">—</div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="l">Trades</div><div class="v mono" id="a-n">—</div></div>
-        <div class="stat"><div class="l">Win rate</div><div class="v mono" id="a-win">—</div></div>
-        <div class="stat"><div class="l">Total P&amp;L</div><div class="v mono" id="a-pnl">—</div></div>
-      </div>
-      <div>
-        <h3 id="a-watch-h">Today's watchlist — AI score vs the buy bar</h3>
-        <div style="height:10px"></div>
-        <div class="watch" id="a-watch"></div>
-      </div>
-      <div><h3>Paper account value</h3><div style="height:8px"></div><div class="chartbox"><canvas id="a-chart"></canvas></div></div>
-      <div>
-        <h3>Trades</h3><div style="height:6px"></div>
-        <div class="tablewrap"><table><thead><tr><th>Day</th><th>Stock</th><th>Buy → Sell</th><th>Result</th></tr></thead><tbody id="a-trades"></tbody></table></div>
-      </div>
-      <details><summary>Weekly learning reports</summary><div style="height:8px"></div><div id="a-reports"></div></details>
-      <details open><summary>Recent activity</summary><div style="height:8px"></div><div class="feed" id="a-feed"></div></details>
-      <div class="sub" id="a-model"></div>
-    </section>
-
     <!-- CHATBOT PAPER TRADER -->
     <section class="panel chat" data-view="chat">
-      <div class="ph"><h2>Chatbot Trader</h2><span class="tag chatp">🧠 PAPER</span><div class="spacer"></div><span id="c-status" class="pill">—</span></div>
+      <div class="ph"><h2>Chad · Chatbot Trader</h2><span class="tag chatp">🧠 PAPER</span><div class="spacer"></div><span id="c-status" class="pill">—</span></div>
       <div id="c-err" class="err hidden"></div>
       <div>
         <div class="big mono" id="c-eq">—</div>
@@ -258,6 +231,7 @@ footer{color:var(--faint);font-size:12px;text-align:center;margin-top:22px}
       <details open><summary>🧰 Its wishlist — what it says would help it</summary><div style="height:8px"></div><div class="lessons" id="c-wish"></div></details>
       <details><summary>Recent activity</summary><div style="height:8px"></div><div class="feed" id="c-feed"></div></details>
     </section>
+    <div id="twin-panels" style="display:contents"></div>
   </div>
   <footer>Encrypted end-to-end · unlocked only in this browser · refreshes every 2 minutes</footer>
 </div>
@@ -333,7 +307,7 @@ const usd = (x, d = 2) => (x < 0 ? "-$" : "$") + Math.abs(x).toLocaleString(unde
 const sgnUsd = x => (x >= 0 ? "+" : "") + usd(x);
 const pct = (x, d = 1) => (x >= 0 ? "+" : "") + (x * 100).toFixed(d) + "%";
 const cls = x => x >= 0 ? "pos" : "neg";
-function setText(id, text, c) { const el = $(id); el.textContent = text; el.classList.remove("pos", "neg"); if (c) el.classList.add(c); }
+function setText(id, text, c, get = $) { const el = typeof id === "string" ? get(id) : id; el.textContent = text; el.classList.remove("pos", "neg"); if (c) el.classList.add(c); }
 const charts = {};
 function lineChart(id, labels, series) {
   if (charts[id]) charts[id].destroy();
@@ -397,82 +371,20 @@ function renderLive(L) {
   feed("l-feed", L.events);
 }
 
-function renderAI(A) {
-  showErr("a-err", A.error); if (A.error) return;
-  setText("a-eq", usd(A.equity));
-  const ch = A.equity - A.start_equity;
-  $("a-sub").innerHTML = ""; $("a-sub").append(`${sgnUsd(ch)} (${pct(ch / A.start_equity, 2)}) since it started with ${usd(A.start_equity, 0)}`);
-  setText("a-n", String(A.n_trades));
-  setText("a-win", A.n_trades ? (A.wins / A.n_trades * 100).toFixed(0) + "%" : "—");
-  setText("a-pnl", sgnUsd(A.pnl), cls(A.pnl));
-  const st = $("a-status");
-  const s = A.status || "";
-  st.className = "pill " + (s.startsWith("holding") ? "hold" : s === "watching" ? "watch" : "idle");
-  st.textContent = s.startsWith("holding") ? "📈 " + s : s === "watching" ? "👀 watching" : s.startsWith("paused") ? "⏸ " + s : "🌙 " + s;
-  $("a-watch-h").textContent = `Can buy today ${A.day || ""} — AI score vs the buy bar (${A.bar != null ? pct(A.bar, 2) : "?"})`;
-  const wl = $("a-watch"); wl.textContent = "";
-  if (!A.watch.length) wl.innerHTML = '<div class="empty">No watchlist yet today — it fills from 9:35 AM ET.</div>';
-  const lo = -0.01, hi = Math.max(0.006, (A.bar || 0) * 1.6), span = hi - lo;
-  const xpos = v => Math.max(0, Math.min(100, (v - lo) / span * 100));
-  const learnOnly = A.watch.filter(w => w.can_buy === false);
-  let divider = false;
-  for (const w of A.watch) {
-    if (w.can_buy === false && !divider) {
-      divider = true;
-      const h = document.createElement("div"); h.className = "learnhdr";
-      h.textContent = `Also watching ${learnOnly.length} more — learning only, it won't buy these`;
-      wl.append(h);
-    }
-    const r = document.createElement("div"); r.className = "wrow" + (w.can_buy === false ? " learn" : "");
-    const sym = document.createElement("div"); sym.className = "sym"; sym.textContent = w.sym + (A.hold && A.hold.sym === w.sym ? " 📈" : "");
-    const gap = document.createElement("div"); gap.className = "gap mono"; gap.textContent = pct(w.gap, 0);
-    const bar = document.createElement("div"); bar.className = "sbar";
-    if (w.score != null) {
-      const z = xpos(0), x = xpos(w.score), f = document.createElement("div"); f.className = "f";
-      f.style.left = Math.min(z, x) + "%"; f.style.width = Math.abs(x - z) + "%";
-      f.style.background = w.score >= (A.bar || 0) ? "var(--green)" : w.score >= 0 ? "var(--blue)" : "var(--red)";
-      bar.append(f);
-    }
-    const zero = document.createElement("div"); zero.className = "zero"; zero.style.left = xpos(0) + "%"; bar.append(zero);
-    if (A.bar != null) { const mk = document.createElement("div"); mk.className = "mark"; mk.style.left = xpos(A.bar) + "%"; mk.title = "buy bar"; bar.append(mk); }
-    const sc = document.createElement("div"); sc.className = "sc mono " + (w.score == null ? "" : cls(w.score));
-    sc.textContent = w.score == null ? "no trades yet" : pct(w.score, 2);
-    r.append(sym, gap, bar, sc); wl.append(r);
-  }
-  const h = A.history.filter(x => x.eq != null);
-  lineChart("a-chart", h.map(x => x.d.slice(5)), [{label: "AI paper account", data: h.map(x => x.eq), color: "#a78bfa", fill: "rgba(167,139,250,.1)"}]);
-  const tb = $("a-trades"); tb.textContent = "";
-  if (!A.trades.length) { const tr = document.createElement("tr"); const td = document.createElement("td"); td.colSpan = 4; td.className = "empty"; td.textContent = "No trades yet — it only buys when a score clears the bar."; tr.append(td); tb.append(tr); }
-  for (const t of A.trades.slice().reverse()) {
-    const tr = document.createElement("tr");
-    const cells = [t.day.slice(5), t.sym, `${usd(t.entry, 2)} → ${usd(t.exit, 2)}`, `${pct(t.pct)} (${sgnUsd(t.pnl)})`];
-    cells.forEach((v, i) => { const td = document.createElement("td"); td.textContent = v; if (i === 3) td.className = "mono " + cls(t.pnl); tr.append(td); });
-    tr.title = t.reason || ""; tb.append(tr);
-  }
-  const rep = $("a-reports"); rep.textContent = "";
-  if (!A.reports || !A.reports.length) rep.innerHTML = '<div class="empty">First report arrives Friday 5:30 PM ET.</div>';
-  for (const r of (A.reports || []).slice().reverse()) {
-    const d = document.createElement("div"); d.className = "ev";
-    const t = document.createElement("div"); t.className = "t mono"; t.textContent = r.date;
-    const x = document.createElement("div"); x.className = "x";
-    x.textContent = `${r.moments} moments learned · confident picks ${pct(r.top, 2)} vs rest ${pct(r.rest, 2)} per 15 min ${r.top > r.rest ? "✅" : "❌"} · new bar ${pct(r.bar, 2)}`;
-    d.append(t, x); rep.append(d);
-  }
-  feed("a-feed", A.events);
-  const M = A.model || {};
-  $("a-model").textContent = `AI model: trained on ${M.trained_rows ? M.trained_rows.toLocaleString() : "?"} moments through ${M.trained_through || "?"}` + (M.retrained ? ` · last retrained ${M.retrained.replace("T", " ")}` : "");
-}
-
 function cell(tr, text, c) { const td = document.createElement("td"); td.textContent = text; if (c) td.className = c; tr.append(td); return td; }
 function emptyRow(tb, n, text) { const tr = document.createElement("tr"); const td = cell(tr, text, "empty"); td.colSpan = n; tb.append(tr); }
 const px = x => x == null ? "?" : "$" + (x >= 1 ? x.toFixed(2) : x.toFixed(4));
 
-function renderChat(C) {
+function renderChat(C, p = "c", who = "the chatbot") {
+  const $ = id => document.getElementById(id.replace(/^c-/, p + "-"));
+  const setText = (id, text, c) => window.setText($(id), text, c);
+  const showErr = (id, err) => window.showErr($(id).id, err);
+  const feed = (id, ev) => window.feed($(id).id, ev);
   showErr("c-err", C.error); if (C.error) return;
   setText("c-eq", usd(C.equity));
   const ch = C.equity - C.start_equity;
-  $("c-sub").textContent = `${sgnUsd(ch)} (${pct(ch / C.start_equity, 2)}) since it started with ${usd(C.start_equity, 0)}` +
-    (C.calls_today ? ` · asked the chatbot ${C.calls_today}× today` : "") +
+  $("c-sub").textContent = `${sgnUsd(ch)} (${pct(ch / C.start_equity, 2)}) since it started with ${usd(C.start_equity, 0)}` + (C.model ? ` · brain: ${C.model.replace(/:free$/, "")}` : "") +
+    (C.calls_today ? ` · asked its brain ${C.calls_today}× today` : "") +
     (C.practice_n ? ` · 🧪 ${C.practice_n} practice trades (${sgnUsd(C.practice_pnl)} pretend) not counted` : "");
   setText("c-n", String(C.n_trades));
   setText("c-win", C.n_trades ? (C.wins / C.n_trades * 100).toFixed(0) + "%" : "—");
@@ -504,7 +416,7 @@ function renderChat(C) {
     pl.append(d);
   }
   const h = (C.history || []).filter(x => x.eq != null);
-  lineChart("c-chart", ["start", ...h.map(x => x.d.slice(5))], [{label: "Chatbot paper account",
+  lineChart(p + "-chart", ["start", ...h.map(x => x.d.slice(5))], [{label: C.model ? who + " paper account" : "Chatbot paper account",
     data: [C.start_equity, ...h.map(x => x.eq)], color: "#5aa9ff", fill: "rgba(90,169,255,.1)"}]);
   const tt = $("c-trades"); tt.textContent = "";
   if (!C.trades.length) emptyRow(tt, 5, "No trades yet.");
@@ -519,7 +431,7 @@ function renderChat(C) {
   if (!C.lessons || !C.lessons.length) ls.innerHTML = '<div class="empty" style="list-style:none">It writes its first lessons after the close on its first day.</div>';
   for (const x of C.lessons || []) { const d = document.createElement("div"); d.textContent = x; ls.append(d); }
   const P = C.practice || {};
-  $("c-practice").textContent = P.days ? `🧪 Weekend practice: ${P.days} past days replayed · ${P.sales} sales, `
+  $("c-practice").textContent = !C.practice ? "" : P.days ? `🧪 Weekend practice: ${P.days} past days replayed · ${P.sales} sales, `
     + `${P.sales ? Math.round(P.wins / P.sales * 100) : 0}% winners` + (P.avg != null ? `, average ${pct(P.avg, 2)} per sale` : "")
     : "🧪 Weekend practice starts Saturday (past days replayed in fast-forward).";
   const wl = $("c-wish"); wl.textContent = "";
@@ -531,12 +443,25 @@ function renderChat(C) {
   feed("c-feed", C.events);
 }
 
+const TWIN_PANELS = [{p: "jace", name: "Jace", color: "#ff5fa2"}, {p: "jax", name: "Jax", color: "#ffe14d"}];
+(function makeTwinPanels() {
+  const chad = document.querySelector('section[data-view="chat"]');
+  for (const t of TWIN_PANELS) {
+    const sec = chad.cloneNode(true);
+    sec.dataset.view = t.p; sec.style.boxShadow = `0 0 0 1px ${t.color}22`;
+    sec.querySelectorAll("[id]").forEach(el => el.id = el.id.replace(/^c-/, t.p + "-"));
+    sec.querySelector("h2").textContent = `${t.name} · Twin`;
+    const tag = sec.querySelector(".tag"); tag.textContent = "👯 PAPER"; tag.style.color = t.color;
+    $("twin-panels").append(sec);
+  }
+})();
 const VIEW_KEY = "bothq.view.v1";
 function applyView() {
   let v = "all"; try { v = localStorage.getItem(VIEW_KEY) || "all"; } catch {}
   $("view").value = v;
   document.querySelectorAll("[data-view]").forEach(p => p.classList.toggle("hidden", v !== "all" && p.dataset.view !== v));
-  $("grid").className = "grid " + (v === "all" ? "all3" : "single");
+  if (v === "ai") v = "all";                                  // the retired AI Day Trader's old view
+  $("grid").className = "grid " + (v === "all" ? "" : "single");
   Object.values(charts).forEach(c => c.resize());
 }
 $("view").onchange = () => { try { localStorage.setItem(VIEW_KEY, $("view").value); } catch {} applyView(); };
@@ -547,8 +472,8 @@ function show(data) {
   lastGen = new Date(data.generated);
   tick();
   if (data.live) renderLive(data.live);
-  if (data.ai) renderAI(data.ai);
   if (data.chat) renderChat(data.chat);
+  for (const t of TWIN_PANELS) if (data[t.p]) renderChat(data[t.p], t.p, t.name);
   applyView();
 }
 function tick() {

@@ -192,7 +192,7 @@ const TWINS = ['jace', 'jax'], twin = id => TWINS.includes(id);
 // ===================== bots =====================
 const BOTS = [{id:'sp',name:'SPENCER',role:'S&P bot · real money',col:'#4da3ff'},{id:'ai',name:'AVA',role:'AI day trader · paper',col:'#ffb03d'},
   {id:'ch',name:'CHAD',role:'chatbot · paper · the control',col:'#3dffa2'},
-  {id:'jace',name:'JACE',role:'twin · simulated',col:'#ff5fa2'},{id:'jax',name:'JAX',role:'twin · simulated',col:'#ffe14d'}];
+  {id:'jace',name:'JACE',role:'twin · paper',col:'#ff5fa2'},{id:'jax',name:'JAX',role:'twin · paper',col:'#ffe14d'}];
 const B = {}; BOTS.forEach(b => { B[b.id] = b; Object.assign(b, {p:P['dock_' + b.id].slice(), path:[], dir:1, walk:0, say:null, sayT:0, wait:0,
   q:[], evq:[], chg:true, speak:0, recent:[]}); });
 let boardTitle = 'BRIEFING // DAILY RESULTS', D = null, tick = 0, talk = null, board = [], meet = null, phase = null, mode = 'live', following = null;
